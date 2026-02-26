@@ -268,7 +268,7 @@
 <div id="main">
   <div id="teams-grid"></div>
   <div class="empty-state" id="empty-state" style="display:none;">
-    <div class="icon">🏀</div>
+    <div class="icon">YDM</div>
     <p>Aucune équipe configurée</p>
     <button class="btn-primary" onclick="openTeamModal(null)">+ Ajouter une équipe</button>
   </div>
@@ -490,7 +490,7 @@ function renderTeams() {
 
     const statsHtml = data.stats.map(stat => {
       const v = vals[stat.id] ?? 0;
-      return `<div class="stat-row" style="background:${hexToRgba(team.color, 0.13)};">
+      return `<div class="stat-row" style="background:${hexToRgba(team.color, 0.2)};">
         <div class="stat-label">${esc(stat.name)}</div>
         <div class="stat-controls">
           <button class="ctrl-btn minus" data-team="${team.id}" data-stat="${stat.id}" data-d="-1">−</button>
