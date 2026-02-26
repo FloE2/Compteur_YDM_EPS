@@ -248,7 +248,7 @@
 
 <header>
   <div class="header-left">
-    <h1>EPS <span>· COMPTEUR</span></h1>
+    <h1>EPS <span>· Match</span></h1>
     <div class="header-credit">Par <strong>Florian Eude</strong> — Collège <strong>Yves du Manoir</strong>, Vaucresson</div>
   </div>
   <div class="header-btns">
@@ -458,6 +458,17 @@ function getMastery(pct, ratio) {
 }
 
 // ═══════════════════════════════════════════
+// HELPERS COLOR
+// ═══════════════════════════════════════════
+function hexToRgba(hex, alpha) {
+  const h = hex.replace('#','');
+  const r = parseInt(h.length===3 ? h[0]+h[0] : h.slice(0,2), 16);
+  const g = parseInt(h.length===3 ? h[1]+h[1] : h.slice(2,4), 16);
+  const b = parseInt(h.length===3 ? h[2]+h[2] : h.slice(4,6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+// ═══════════════════════════════════════════
 // RENDER TEAMS
 // ═══════════════════════════════════════════
 function renderTeams() {
@@ -474,10 +485,12 @@ function renderTeams() {
     card.className = 'team-card';
     card.style.borderTopColor = team.color;
     card.style.borderTopWidth = '4px';
+    card.style.background = hexToRgba(team.color, 0.07);
+    card.style.borderColor = hexToRgba(team.color, 0.35);
 
     const statsHtml = data.stats.map(stat => {
       const v = vals[stat.id] ?? 0;
-      return `<div class="stat-row">
+      return `<div class="stat-row" style="background:${hexToRgba(team.color, 0.13)};">
         <div class="stat-label">${esc(stat.name)}</div>
         <div class="stat-controls">
           <button class="ctrl-btn minus" data-team="${team.id}" data-stat="${stat.id}" data-d="-1">−</button>
