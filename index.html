@@ -4,241 +4,290 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>EPS · Observateur Match</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0d0f14;
-    --surface: #161a24;
-    --surface2: #1e2433;
-    --border: #2a3045;
-    --text: #e8ecf4;
-    --muted: #6b7694;
+    --bg: #111318;
+    --surface: #1c2030;
+    --surface2: #252b3b;
+    --surface3: #2e3650;
+    --border: #3a4260;
+    --border-light: #4a5580;
+    --text: #f0f4ff;
+    --muted: #7a88b0;
     --accent: #f5a623;
-    --red: #ff4757;
-    --orange: #ff8c00;
-    --green: #2ed573;
+    --accent-dim: rgba(245,166,35,.12);
+    --red: #ff4a5e;
+    --orange: #ff8f00;
+    --green: #00e676;
+    --blue: #4d9fff;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
   /* ─── HEADER ─── */
   header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 16px; background: var(--surface);
-    border-bottom: 2px solid var(--border);
+    padding: 12px 18px; background: var(--surface);
+    border-bottom: 1px solid var(--border);
     position: sticky; top: 0; z-index: 100;
     gap: 12px;
+    box-shadow: 0 2px 20px rgba(0,0,0,.4);
   }
-  .header-left { display: flex; flex-direction: column; gap: 1px; }
-  header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 3px; color: var(--accent); line-height: 1; }
+  .header-left { display: flex; flex-direction: column; gap: 2px; }
+  header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 4px; color: var(--accent); line-height: 1; }
   header h1 span { color: var(--text); }
-  .header-credit {
-    font-size: 0.68rem; color: var(--muted); font-weight: 500; letter-spacing: 0.3px; line-height: 1;
-    white-space: nowrap;
-  }
-  .header-credit strong { color: #9aa3bb; }
+  .header-credit { font-size: 0.7rem; color: var(--muted); font-weight: 500; letter-spacing: 0.3px; }
+  .header-credit strong { color: #9aa3cc; }
   .header-btns { display: flex; gap: 8px; flex-shrink: 0; }
   .btn-icon {
     background: var(--surface2); border: 1.5px solid var(--border); color: var(--text);
-    border-radius: 10px; padding: 7px 13px; font-size: 0.82rem; font-weight: 600;
-    cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s;
-    display: flex; align-items: center; gap: 5px;
+    border-radius: 10px; padding: 8px 14px; font-size: 0.82rem; font-weight: 700;
+    cursor: pointer; font-family: 'Outfit', sans-serif; transition: all .15s;
+    display: flex; align-items: center; gap: 5px; letter-spacing: .3px;
   }
-  .btn-icon:hover { background: var(--border); }
+  .btn-icon:hover { background: var(--surface3); border-color: var(--border-light); }
   .btn-icon.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
   /* ─── SESSION BAR ─── */
   .session-bar {
     background: var(--surface2); border-bottom: 1px solid var(--border);
-    padding: 7px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 8px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   }
   .session-name-input {
-    background: transparent; border: none; border-bottom: 1px dashed var(--border);
-    color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
-    padding: 2px 4px; width: 160px; outline: none;
+    background: transparent; border: none; border-bottom: 1.5px solid var(--border);
+    color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.88rem;
+    padding: 3px 6px; width: 170px; outline: none; font-weight: 500;
   }
-  .session-timer { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--text); letter-spacing: 2px; }
+  .session-name-input:focus { border-color: var(--accent); }
+  .session-timer { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--accent); letter-spacing: 3px; }
   .timer-btn {
-    background: none; border: 1.5px solid var(--border); color: var(--muted);
-    border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 0.75rem; font-weight: 600;
-    font-family: 'DM Sans', sans-serif; transition: all .12s;
+    background: var(--surface3); border: 1.5px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: 5px 12px; cursor: pointer; font-size: 0.85rem; font-weight: 700;
+    font-family: 'Outfit', sans-serif; transition: all .12s;
   }
   .timer-btn:hover { border-color: var(--accent); color: var(--accent); }
   #btn-undo-global {
-    margin-left: auto; background: rgba(255,71,87,.12); border: 1.5px solid var(--red);
-    color: var(--red); border-radius: 8px; padding: 5px 14px; font-size: 0.8rem;
-    font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s;
+    margin-left: auto; background: rgba(255,74,94,.1); border: 1.5px solid var(--red);
+    color: var(--red); border-radius: 8px; padding: 6px 14px; font-size: 0.82rem;
+    font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all .15s;
     display: flex; align-items: center; gap: 5px;
   }
-  #btn-undo-global:hover { background: rgba(255,71,87,.25); }
-  #btn-undo-global:disabled { opacity: .35; cursor: default; }
+  #btn-undo-global:hover { background: rgba(255,74,94,.22); }
+  #btn-undo-global:disabled { opacity: .3; cursor: default; }
 
   /* ─── MAIN ─── */
-  #main { padding: 14px; }
+  #main { padding: 16px; }
   .empty-state {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-height: 60vh; gap: 14px; color: var(--muted);
+    min-height: 60vh; gap: 16px; color: var(--muted);
   }
-  .empty-state .icon { font-size: 3.5rem; }
+  .empty-state .icon { font-size: 4rem; letter-spacing: 4px; font-family: 'Bebas Neue'; color: var(--border-light); }
   .btn-primary {
-    background: var(--accent); color: #000; font-weight: 700;
-    border: none; border-radius: 12px; padding: 12px 26px; font-size: 1rem;
-    cursor: pointer; font-family: 'DM Sans', sans-serif; transition: transform .1s;
+    background: var(--accent); color: #000; font-weight: 800;
+    border: none; border-radius: 12px; padding: 13px 28px; font-size: 1rem;
+    cursor: pointer; font-family: 'Outfit', sans-serif; transition: transform .1s, box-shadow .1s;
+    box-shadow: 0 4px 20px rgba(245,166,35,.3);
   }
+  .btn-primary:hover { box-shadow: 0 6px 28px rgba(245,166,35,.45); }
   .btn-primary:active { transform: scale(.97); }
 
-  #teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 14px; }
+  #teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
   #teams-grid.col1 { grid-template-columns: 1fr; }
   #teams-grid.col2 { grid-template-columns: repeat(2,1fr); }
   #teams-grid.col3 { grid-template-columns: repeat(3,1fr); }
 
   /* ─── TEAM CARD ─── */
   .team-card {
-    background: var(--surface); border-radius: 18px;
-    border: 2px solid var(--border); overflow: hidden;
+    background: var(--surface);
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,.35);
+    transition: box-shadow .2s;
   }
+  .team-card:hover { box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+
   .team-header {
-    padding: 12px 16px 10px; display: flex; align-items: center; gap: 10px;
-    border-bottom: 1px solid var(--border);
+    padding: 14px 18px 12px;
+    display: flex; align-items: center; gap: 10px;
   }
-  .team-color-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; }
-  .team-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.65rem; letter-spacing: 2px; flex: 1; line-height: 1; }
+  .team-color-bar {
+    width: 5px; height: 40px; border-radius: 3px; flex-shrink: 0;
+  }
+  .team-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 2.5px; flex: 1; line-height: 1; }
   .team-edit-btn {
-    background: none; border: none; color: var(--muted); cursor: pointer;
-    font-size: 0.95rem; padding: 4px; opacity: 0; transition: opacity .15s;
+    background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
+    cursor: pointer; font-size: 0.85rem; padding: 5px 9px; border-radius: 8px;
+    opacity: 0; transition: opacity .15s; font-family: 'Outfit', sans-serif; font-weight: 600;
   }
   .team-card:hover .team-edit-btn { opacity: 1; }
 
-  .stats-list { padding: 8px 10px; display: flex; flex-direction: column; gap: 5px; }
-  .stat-row { background: var(--surface2); border-radius: 12px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; }
-  .stat-label { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; flex: 1; }
-  .stat-controls { display: flex; align-items: center; gap: 6px; }
-  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; line-height: 1; min-width: 48px; text-align: center; }
-  .ctrl-btn {
-    width: 44px; height: 44px; border-radius: 10px; border: none;
-    font-size: 1.4rem; font-weight: 700; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform .08s; user-select: none; font-family: 'DM Sans', sans-serif; flex-shrink: 0;
+  /* ─── STATS ─── */
+  .stats-list { padding: 0 12px 10px; display: flex; flex-direction: column; gap: 8px; }
+
+  .stat-row {
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--surface2);
+    border: 1px solid var(--border);
   }
-  .ctrl-btn:active { transform: scale(.86); }
-  .ctrl-btn.minus { background: #2a1e2b; color: var(--red); }
-  .ctrl-btn.plus  { background: #1a2b1e; color: var(--green); }
+  .stat-label-bar {
+    padding: 6px 14px 4px;
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.2px; color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-controls-row {
+    display: flex; align-items: stretch;
+  }
+  .ctrl-btn {
+    width: 60px; border: none; flex-shrink: 0;
+    font-size: 1.8rem; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .1s; user-select: none; font-family: 'Outfit', sans-serif;
+    line-height: 1;
+  }
+  .ctrl-btn:active { filter: brightness(1.4); transform: scale(.9); }
+  .ctrl-btn.minus {
+    background: rgba(255,74,94,.15); color: var(--red);
+    border-right: 1px solid var(--border);
+  }
   .ctrl-btn.minus:hover { background: var(--red); color: #fff; }
-  .ctrl-btn.plus:hover  { background: var(--green); color: #000; }
+  .ctrl-btn.plus {
+    background: rgba(0,230,118,.12); color: var(--green);
+    border-left: 1px solid var(--border);
+  }
+  .ctrl-btn.plus:hover { background: var(--green); color: #000; }
+
+  .stat-value-wrap {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    padding: 10px 0;
+    background: var(--surface3);
+  }
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    line-height: 1;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,.5);
+    letter-spacing: 2px;
+  }
 
   /* ─── RATIO BLOCK ─── */
-  .ratios-zone { padding: 0 10px 8px; display: flex; flex-direction: column; gap: 6px; }
+  .ratios-zone { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 8px; }
   .ratio-row {
-    background: var(--bg); border-radius: 12px; padding: 9px 12px;
-    border: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px;
+    background: var(--surface2); border-radius: 14px; padding: 11px 14px;
+    border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px;
   }
   .ratio-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .ratio-label { font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .8px; }
-  .ratio-right { display: flex; align-items: center; gap: 7px; }
-  .mastery-badge { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; padding: 2px 8px; border-radius: 20px; }
-  .ratio-pct { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 1px; line-height: 1; }
-  .ratio-detail { font-size: 0.68rem; color: var(--muted); }
-  .ratio-bar { height: 7px; border-radius: 4px; background: var(--border); overflow: hidden; }
-  .ratio-bar-fill { height: 100%; border-radius: 4px; transition: width .35s ease; }
+  .ratio-label { font-size: 0.7rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; }
+  .ratio-right { display: flex; align-items: center; gap: 8px; }
+  .mastery-badge { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 3px 9px; border-radius: 20px; }
+  .ratio-pct { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 1px; line-height: 1; }
+  .ratio-detail { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
+  .ratio-bar { height: 8px; border-radius: 5px; background: var(--surface3); overflow: hidden; }
+  .ratio-bar-fill { height: 100%; border-radius: 5px; transition: width .4s cubic-bezier(.4,0,.2,1); }
 
   /* mastery colors */
-  .mastery-insuf   { background: rgba(255,71,87,.18);  color: var(--red);    }
-  .mastery-fragile { background: rgba(255,140,0,.18);  color: var(--orange); }
-  .mastery-ok      { background: rgba(46,213,115,.18); color: var(--green);  }
-  .mastery-top     { background: rgba(46,213,115,.3);  color: #00e676;       }
+  .mastery-insuf   { background: rgba(255,74,94,.2);  color: var(--red);    }
+  .mastery-fragile { background: rgba(255,143,0,.2);  color: var(--orange); }
+  .mastery-ok      { background: rgba(0,230,118,.2);  color: var(--green);  }
+  .mastery-top     { background: rgba(0,230,118,.35); color: #69ffb0;       }
   .pct-insuf   { color: var(--red);    }
   .pct-fragile { color: var(--orange); }
   .pct-ok      { color: var(--green);  }
-  .pct-top     { color: #00e676;       }
-  .bar-insuf   { background: var(--red);    }
-  .bar-fragile { background: var(--orange); }
-  .bar-ok      { background: var(--green);  }
-  .bar-top     { background: #00e676;       }
+  .pct-top     { color: #69ffb0;       }
+  .bar-insuf   { background: linear-gradient(90deg, var(--red), #ff8080);  }
+  .bar-fragile { background: linear-gradient(90deg, var(--orange), #ffd040); }
+  .bar-ok      { background: linear-gradient(90deg, #00c853, var(--green)); }
+  .bar-top     { background: linear-gradient(90deg, var(--green), #69ffb0); }
 
-  .team-footer { padding: 5px 10px 10px; display: flex; justify-content: flex-end; }
+  .team-footer { padding: 4px 12px 12px; display: flex; justify-content: flex-end; }
   .btn-reset {
     background: none; border: 1px solid var(--border); color: var(--muted);
-    border-radius: 8px; padding: 4px 12px; font-size: 0.72rem; cursor: pointer;
-    font-family: 'DM Sans', sans-serif; font-weight: 600; transition: all .15s;
+    border-radius: 8px; padding: 5px 13px; font-size: 0.72rem; cursor: pointer;
+    font-family: 'Outfit', sans-serif; font-weight: 600; transition: all .15s;
   }
-  .btn-reset:hover { border-color: var(--red); color: var(--red); }
+  .btn-reset:hover { border-color: var(--red); color: var(--red); background: rgba(255,74,94,.06); }
+
+  /* ─── DIVIDER ─── */
+  .team-divider {
+    height: 2px;
+    margin: 0 12px;
+    border-radius: 2px;
+    opacity: .25;
+    margin-bottom: 10px;
+  }
 
   /* ─── MODALS ─── */
-  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 200; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px); }
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 200; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(6px); }
   .overlay.open { display: flex; }
-  .modal { background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 24px; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; }
-  .modal h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 20px; }
-  .form-group { margin-bottom: 16px; }
-  .form-group label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 7px; }
+  .modal { background: var(--surface); border: 1.5px solid var(--border); border-radius: 22px; padding: 26px; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 80px rgba(0,0,0,.7); }
+  .modal h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2.5px; color: var(--accent); margin-bottom: 22px; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 8px; }
   .form-group input[type="text"], .form-group input[type="number"], .form-group select {
     width: 100%; background: var(--surface2); border: 1.5px solid var(--border);
-    border-radius: 10px; padding: 10px 13px; color: var(--text);
-    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: border-color .15s;
+    border-radius: 11px; padding: 11px 14px; color: var(--text);
+    font-family: 'Outfit', sans-serif; font-size: 0.95rem; outline: none; transition: border-color .15s;
+    font-weight: 500;
   }
   .form-group select option { background: var(--surface2); }
   .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
-
   .color-picker-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .color-swatch { width: 34px; height: 34px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: transform .1s, border-color .1s; }
-  .color-swatch.selected { border-color: #fff; transform: scale(1.15); }
-  .color-custom { width: 34px; height: 34px; border-radius: 50%; cursor: pointer; border: 2px dashed var(--border); overflow: hidden; position: relative; }
+  .color-swatch { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: transform .1s, border-color .1s; }
+  .color-swatch.selected { border-color: #fff; transform: scale(1.18); }
+  .color-custom { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; border: 2px dashed var(--border); overflow: hidden; position: relative; }
   .color-custom input[type="color"] { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; border: none; cursor: pointer; opacity: 0; }
   .color-custom-preview { position: absolute; inset: 0; border-radius: 50%; }
-
-  .modal-footer { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
-  .btn-cancel { flex: 1; min-width: 80px; background: var(--surface2); border: 1.5px solid var(--border); color: var(--text); border-radius: 12px; padding: 11px; font-size: 0.92rem; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; }
-  .btn-save { flex: 2; min-width: 120px; background: var(--accent); border: none; color: #000; border-radius: 12px; padding: 11px; font-size: 0.92rem; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 700; }
-  .btn-danger { background: rgba(255,71,87,.15); border: 1.5px solid var(--red); color: var(--red); border-radius: 12px; padding: 11px 16px; font-size: 0.9rem; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; }
+  .modal-footer { display: flex; gap: 8px; margin-top: 22px; flex-wrap: wrap; }
+  .btn-cancel { flex: 1; min-width: 80px; background: var(--surface2); border: 1.5px solid var(--border); color: var(--text); border-radius: 12px; padding: 12px; font-size: 0.92rem; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 700; }
+  .btn-save { flex: 2; min-width: 120px; background: var(--accent); border: none; color: #000; border-radius: 12px; padding: 12px; font-size: 0.95rem; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 800; box-shadow: 0 4px 16px rgba(245,166,35,.25); }
+  .btn-danger { background: rgba(255,74,94,.12); border: 1.5px solid var(--red); color: var(--red); border-radius: 12px; padding: 12px 18px; font-size: 0.9rem; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 700; }
 
   /* ─── SETTINGS VIEW ─── */
-  #settings-view { padding: 20px; max-width: 720px; display: none; }
-  .section-title-large { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 4px; }
-  .settings-section { margin-top: 26px; }
-  .settings-section h3 { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-
-  .team-list-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border-radius: 12px; padding: 11px 14px; margin-bottom: 7px; }
+  #settings-view { padding: 22px; max-width: 720px; display: none; }
+  .section-title-large { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2.5px; color: var(--accent); margin-bottom: 4px; }
+  .settings-section { margin-top: 28px; }
+  .settings-section h3 { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px; color: var(--muted); margin-bottom: 14px; padding-bottom: 9px; border-bottom: 1px solid var(--border); }
+  .team-list-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border-radius: 12px; padding: 12px 15px; margin-bottom: 7px; border: 1px solid var(--border); }
   .team-list-dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
   .team-list-name { flex: 1; font-weight: 600; }
-  .btn-sm { background: var(--surface); border: 1px solid var(--border); color: var(--muted); border-radius: 7px; padding: 4px 10px; font-size: 0.72rem; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; transition: all .12s; }
+  .btn-sm { background: var(--surface); border: 1px solid var(--border); color: var(--muted); border-radius: 7px; padding: 5px 11px; font-size: 0.72rem; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 700; transition: all .12s; }
   .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
   .btn-sm.del:hover { border-color: var(--red); color: var(--red); }
-
-  .stat-config-item { display: flex; align-items: center; gap: 8px; background: var(--surface2); border-radius: 10px; padding: 9px 11px; margin-bottom: 7px; }
-  .stat-config-item input { flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.92rem; padding: 2px 4px; outline: none; }
-  .btn-del { background: none; border: none; color: var(--red); font-size: 1.1rem; cursor: pointer; padding: 2px 5px; border-radius: 6px; line-height: 1; }
-  .btn-del:hover { background: rgba(255,71,87,.15); }
-  .btn-add { background: none; border: 1.5px dashed var(--border); color: var(--muted); border-radius: 10px; padding: 9px; width: 100%; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; transition: all .15s; margin-top: 4px; display: block; }
-  .btn-add:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* Ratio config */
-  .ratio-config-item { background: var(--surface2); border-radius: 12px; padding: 13px; margin-bottom: 8px; border: 1px solid var(--border); }
-  .ratio-config-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .ratio-config-header input { flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; padding: 2px 4px; outline: none; }
-  .ratio-formula { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .ratio-formula select { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; padding: 6px 8px; border-radius: 8px; outline: none; }
-  .ratio-div-sym { color: var(--muted); font-weight: 700; font-size: 1.2rem; }
+  .ratio-config-item { background: var(--surface2); border-radius: 14px; padding: 14px; margin-bottom: 9px; border: 1px solid var(--border); }
+  .ratio-config-header { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; }
+  .ratio-config-header input { flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 700; padding: 3px 4px; outline: none; }
+  .ratio-formula { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; }
+  .ratio-formula select { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.84rem; padding: 7px 9px; border-radius: 9px; outline: none; }
+  .ratio-div-sym { color: var(--muted); font-weight: 800; font-size: 1.2rem; }
   .ratio-thresholds { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .ratio-thresholds > span { font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
+  .ratio-thresholds > span { font-size: 0.68rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
   .threshold-grp { display: flex; align-items: center; gap: 4px; }
   .threshold-dot { width: 9px; height: 9px; border-radius: 50%; }
-  .threshold-grp input { width: 55px; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 7px; padding: 3px 6px; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; outline: none; text-align: center; }
+  .threshold-grp input { width: 55px; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 7px; padding: 4px 6px; font-family: 'Outfit', sans-serif; font-size: 0.8rem; outline: none; text-align: center; }
   .threshold-grp span { font-size: 0.75rem; color: var(--muted); }
-  .thresholds-legend { font-size: 0.65rem; color: var(--muted); margin-top: 6px; }
-
+  .thresholds-legend { font-size: 0.65rem; color: var(--muted); margin-top: 7px; }
+  .btn-del { background: none; border: none; color: var(--red); font-size: 1.1rem; cursor: pointer; padding: 3px 6px; border-radius: 6px; line-height: 1; }
+  .btn-del:hover { background: rgba(255,74,94,.15); }
+  .btn-add { background: none; border: 1.5px dashed var(--border); color: var(--muted); border-radius: 10px; padding: 10px; width: 100%; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 700; transition: all .15s; margin-top: 4px; display: block; }
+  .btn-add:hover { border-color: var(--accent); color: var(--accent); }
   .view-toggle { display: flex; gap: 7px; }
-  .view-btn { background: var(--surface2); border: 1.5px solid var(--border); color: var(--muted); border-radius: 9px; padding: 7px 14px; font-size: 0.8rem; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; transition: all .15s; }
+  .view-btn { background: var(--surface2); border: 1.5px solid var(--border); color: var(--muted); border-radius: 9px; padding: 8px 16px; font-size: 0.8rem; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 700; transition: all .15s; }
   .view-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
   /* ─── TOAST ─── */
-  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(60px); background: var(--surface); border: 1.5px solid var(--border); color: var(--text); border-radius: 12px; padding: 10px 22px; font-size: 0.88rem; font-weight: 600; transition: transform .25s; z-index: 500; pointer-events: none; white-space: nowrap; }
+  .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(70px); background: var(--surface3); border: 1.5px solid var(--border-light); color: var(--text); border-radius: 14px; padding: 11px 24px; font-size: 0.88rem; font-weight: 700; transition: transform .28s cubic-bezier(.34,1.56,.64,1); z-index: 500; pointer-events: none; white-space: nowrap; box-shadow: 0 8px 30px rgba(0,0,0,.5); }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  @keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.22)} 100%{transform:scale(1)} }
-  .pop { animation: pop .18s ease; }
+  @keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.28)} 100%{transform:scale(1)} }
+  .pop { animation: pop .2s ease; }
 
   @media (max-width: 480px) {
-    .stat-value { font-size: 1.7rem; }
-    .ctrl-btn { width: 40px; height: 40px; font-size: 1.2rem; }
+    .stat-value { font-size: 2.5rem; }
+    .ctrl-btn { width: 52px; }
     #btn-undo-global .undo-label { display: none; }
     .header-credit { display: none; }
   }
@@ -269,7 +318,7 @@
   <div id="teams-grid"></div>
   <div class="empty-state" id="empty-state" style="display:none;">
     <div class="icon">YDM</div>
-    <p>Aucune équipe configurée</p>
+    <p style="font-size:.95rem;font-weight:500;">Aucune équipe configurée</p>
     <button class="btn-primary" onclick="openTeamModal(null)">+ Ajouter une équipe</button>
   </div>
 </div>
@@ -291,7 +340,7 @@
 
   <div class="settings-section">
     <h3>Indicateurs d'efficacité (% en direct)</h3>
-    <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px;">Définissez des ratios affichés avec code couleur de maîtrise. Ex : Tirs réussis ÷ Tirs tentés = % réussite au tir.</p>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px;">Définissez des ratios affichés avec code couleur de maîtrise.</p>
     <div id="st-ratios"></div>
     <button class="btn-add" onclick="addRatio()">+ Ajouter un indicateur</button>
   </div>
@@ -351,22 +400,20 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════
-// DATA
-// ═══════════════════════════════════════════
 const COLORS = ['#ff4757','#ff6b81','#ffa502','#f5a623','#2ed573','#1dd1a1','#1e90ff','#74b9ff','#a29bfe','#fd79a8','#ffffff','#b2bec3'];
 
 const defaultData = () => ({
   teams: [],
   stats: [
-    { id: 's1', name: 'Balles perdues' },
-    { id: 's2', name: 'Tirs tentés' },
-    { id: 's3', name: 'Tirs réussis' },
+    { id: 's1', name: 'Frisbee perdu' },
+    { id: 's2', name: 'Passes réussies' },
+    { id: 's3', name: 'Point marqué' },
   ],
   ratios: [{
-    id: 'r1', name: 'Efficacité au tir',
-    numId: 's3', denomId: 's2',
-    t1: 30, t2: 50, t3: 70
+    id: 'r1', name: 'Taux de perte de possession',
+    numId: 's1', denomId: 's1', denomId2: 's2',
+    t1: 30, t2: 50, t3: 70,
+    invertColors: true
   }],
   gridCols: 'auto',
   session: '',
@@ -379,9 +426,7 @@ let undoStack = [];
 
 function save() { localStorage.setItem('eps_data', JSON.stringify(data)); }
 
-// ═══════════════════════════════════════════
 // TIMER
-// ═══════════════════════════════════════════
 let timerSecs = parseInt(localStorage.getItem('eps_timer') || '0');
 let timerOn = false, timerIv = null;
 function renderTimer() {
@@ -404,9 +449,7 @@ const sesInput = document.getElementById('session-name');
 sesInput.value = data.session || '';
 sesInput.oninput = () => { data.session = sesInput.value; save(); };
 
-// ═══════════════════════════════════════════
 // UNDO
-// ═══════════════════════════════════════════
 function pushUndo(teamId, statId, oldVal) {
   undoStack.push({ teamId, statId, oldVal });
   if (undoStack.length > 60) undoStack.shift();
@@ -422,9 +465,7 @@ document.getElementById('btn-undo-global').onclick = function() {
   showToast('↩ Dernière action annulée');
 };
 
-// ═══════════════════════════════════════════
 // VIEW / NAV
-// ═══════════════════════════════════════════
 let showSettings = false;
 document.getElementById('btn-settings').onclick = function() {
   showSettings = !showSettings;
@@ -447,19 +488,14 @@ function applyGrid() {
   g.className = data.gridCols === 'auto' ? '' : data.gridCols;
 }
 
-// ═══════════════════════════════════════════
-// MASTERY
-// ═══════════════════════════════════════════
 function getMastery(pct, ratio) {
-  if (pct >= +ratio.t3) return { k:'top',    txt:'Très satisfaisante' };
-  if (pct >= +ratio.t2) return { k:'ok',     txt:'Satisfaisante'      };
-  if (pct >= +ratio.t1) return { k:'fragile', txt:'Fragile'           };
-  return                       { k:'insuf',   txt:'Insuffisante'      };
+  const inv = ratio.invertColors;
+  if (pct >= +ratio.t3) return inv ? { k:'insuf',   txt:'Insuffisante'     } : { k:'top',    txt:'Très satisfaisante' };
+  if (pct >= +ratio.t2) return inv ? { k:'fragile', txt:'Fragile'          } : { k:'ok',     txt:'Satisfaisante'      };
+  if (pct >= +ratio.t1) return inv ? { k:'ok',      txt:'Satisfaisante'    } : { k:'fragile', txt:'Fragile'           };
+  return                       inv ? { k:'top',     txt:'Très satisfaisante'} : { k:'insuf',   txt:'Insuffisante'      };
 }
 
-// ═══════════════════════════════════════════
-// HELPERS COLOR
-// ═══════════════════════════════════════════
 function hexToRgba(hex, alpha) {
   const h = hex.replace('#','');
   const r = parseInt(h.length===3 ? h[0]+h[0] : h.slice(0,2), 16);
@@ -468,9 +504,6 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-// ═══════════════════════════════════════════
-// RENDER TEAMS
-// ═══════════════════════════════════════════
 function renderTeams() {
   const grid = document.getElementById('teams-grid');
   const empty = document.getElementById('empty-state');
@@ -483,18 +516,18 @@ function renderTeams() {
     const vals = team.values || {};
     const card = document.createElement('div');
     card.className = 'team-card';
-    card.style.borderTopColor = team.color;
-    card.style.borderTopWidth = '4px';
-    card.style.background = hexToRgba(team.color, 0.07);
-    card.style.borderColor = hexToRgba(team.color, 0.35);
+    card.style.borderColor = hexToRgba(team.color, 0.4);
+    card.style.boxShadow = `0 4px 28px rgba(0,0,0,.35), inset 0 0 0 1px ${hexToRgba(team.color, 0.08)}`;
 
     const statsHtml = data.stats.map(stat => {
       const v = vals[stat.id] ?? 0;
-      return `<div class="stat-row" style="background:${hexToRgba(team.color, 0.2)};">
-        <div class="stat-label">${esc(stat.name)}</div>
-        <div class="stat-controls">
+      return `<div class="stat-row">
+        <div class="stat-label-bar">${esc(stat.name)}</div>
+        <div class="stat-controls-row">
           <button class="ctrl-btn minus" data-team="${team.id}" data-stat="${stat.id}" data-d="-1">−</button>
-          <div class="stat-value" id="v-${team.id}-${stat.id}">${v}</div>
+          <div class="stat-value-wrap" style="background:${hexToRgba(team.color, 0.18)}">
+            <div class="stat-value" id="v-${team.id}-${stat.id}" style="color:${team.color === '#ffffff' ? '#fff' : team.color};text-shadow:0 2px 16px ${hexToRgba(team.color, 0.6)}">${v}</div>
+          </div>
           <button class="ctrl-btn plus" data-team="${team.id}" data-stat="${stat.id}" data-d="1">+</button>
         </div>
       </div>`;
@@ -502,9 +535,18 @@ function renderTeams() {
 
     const ratiosHtml = data.ratios.length ? `<div class="ratios-zone">` + data.ratios.map(ratio => {
       const num = vals[ratio.numId] ?? 0;
-      const den = vals[ratio.denomId] ?? 0;
+      const den1 = vals[ratio.denomId] ?? 0;
+      const den2 = ratio.denomId2 ? (vals[ratio.denomId2] ?? 0) : 0;
+      const den = ratio.denomId2 ? den1 + den2 : den1;
       const numStat = data.stats.find(s => s.id === ratio.numId);
       const denStat = data.stats.find(s => s.id === ratio.denomId);
+      const den2Stat = ratio.denomId2 ? data.stats.find(s => s.id === ratio.denomId2) : null;
+      const formulaLabel = den2Stat
+        ? `${esc(numStat?.name||'?')} ÷ (${esc(denStat?.name||'?')} + ${esc(den2Stat.name)})`
+        : `${esc(numStat?.name||'?')} ÷ ${esc(denStat?.name||'?')}`;
+      const detailLabel = den2Stat
+        ? `${num} ${esc(numStat?.name||'')} / ${den} possessions (${den1}+${den2})`
+        : `${num} ${esc(numStat?.name||'')} / ${den} ${esc(denStat?.name||'')}`;
       if (den === 0) {
         return `<div class="ratio-row">
           <div class="ratio-top">
@@ -514,7 +556,7 @@ function renderTeams() {
               <div class="ratio-pct pct-insuf">—</div>
             </div>
           </div>
-          <div class="ratio-detail">${esc(numStat?.name||'?')} / ${esc(denStat?.name||'?')}</div>
+          <div class="ratio-detail">${formulaLabel}</div>
           <div class="ratio-bar"><div class="ratio-bar-fill bar-insuf" style="width:0%"></div></div>
         </div>`;
       }
@@ -528,21 +570,21 @@ function renderTeams() {
             <div class="ratio-pct pct-${m.k}">${pct}%</div>
           </div>
         </div>
-        <div class="ratio-detail">${num} ${esc(numStat?.name||'')} / ${den} ${esc(denStat?.name||'')}</div>
+        <div class="ratio-detail">${detailLabel}</div>
         <div class="ratio-bar"><div class="ratio-bar-fill bar-${m.k}" style="width:${Math.min(pct,100)}%"></div></div>
       </div>`;
     }).join('') + `</div>` : '';
 
     card.innerHTML = `
-      <div class="team-header">
-        <div class="team-color-dot" style="background:${team.color}"></div>
-        <div class="team-name" style="color:${team.color}">${esc(team.name)}</div>
-        <button class="team-edit-btn" onclick="openTeamModal('${team.id}')">✏</button>
+      <div class="team-header" style="background:${hexToRgba(team.color, 0.1)}; border-bottom: 1px solid ${hexToRgba(team.color, 0.2)};">
+        <div class="team-color-bar" style="background:${team.color};box-shadow:0 0 10px ${hexToRgba(team.color, 0.6)}"></div>
+        <div class="team-name" style="color:${team.color};text-shadow:0 2px 12px ${hexToRgba(team.color, 0.4)}">${esc(team.name)}</div>
+        <button class="team-edit-btn" onclick="openTeamModal('${team.id}')">✏ Modifier</button>
       </div>
       <div class="stats-list">${statsHtml}</div>
       ${ratiosHtml}
       <div class="team-footer">
-        <button class="btn-reset" onclick="resetTeam('${team.id}')">↺ Remise à zéro équipe</button>
+        <button class="btn-reset" onclick="resetTeam('${team.id}')">↺ Remise à zéro</button>
       </div>`;
     grid.appendChild(card);
   });
@@ -567,7 +609,7 @@ function changeStat(teamId, statId, delta) {
   save();
   const el = document.getElementById(`v-${teamId}-${statId}`);
   if (el) { el.textContent = nv; el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
-  const affectsRatio = data.ratios.some(r => r.numId === statId || r.denomId === statId);
+  const affectsRatio = data.ratios.some(r => r.numId === statId || r.denomId === statId || r.denomId2 === statId);
   if (affectsRatio) renderTeams();
 }
 
@@ -577,9 +619,6 @@ function resetTeam(teamId) {
   if (team) { team.values = {}; save(); renderTeams(); showToast('Compteurs remis à zéro'); }
 }
 
-// ═══════════════════════════════════════════
-// TEAM MODAL
-// ═══════════════════════════════════════════
 function openTeamModal(teamId) {
   editingTeamId = teamId;
   const team = teamId ? data.teams.find(t => t.id === teamId) : null;
@@ -632,11 +671,7 @@ function deleteCurrentTeam() {
   showToast('Équipe supprimée');
 }
 
-// ═══════════════════════════════════════════
-// SETTINGS
-// ═══════════════════════════════════════════
 function renderSettings() {
-  // Teams
   const tl = document.getElementById('st-teams'); tl.innerHTML = '';
   if (!data.teams.length) tl.innerHTML = '<p style="color:var(--muted);font-size:.82rem;">Aucune équipe.</p>';
   data.teams.forEach(team => {
@@ -648,43 +683,52 @@ function renderSettings() {
     tl.appendChild(d);
   });
 
-  // Stats
   const sl = document.getElementById('st-stats'); sl.innerHTML = '';
   data.stats.forEach((stat, i) => {
     const d = document.createElement('div'); d.className = 'team-list-item';
-    d.innerHTML = `<span style="color:var(--muted);font-size:.75rem;min-width:18px;font-weight:700;">${i+1}.</span>
+    d.innerHTML = `<span style="color:var(--muted);font-size:.75rem;min-width:18px;font-weight:800;">${i+1}.</span>
       <div class="team-list-name">${esc(stat.name)}</div>
       <button class="btn-sm" onclick="openStatModal('${stat.id}')">✏ Modifier</button>
       <button class="btn-sm del" onclick="deleteStat('${stat.id}')">✕</button>`;
     sl.appendChild(d);
   });
 
-  // Ratios
   const rl = document.getElementById('st-ratios'); rl.innerHTML = '';
   data.ratios.forEach(ratio => {
     const d = document.createElement('div'); d.className = 'ratio-config-item';
     const opts = (sel) => data.stats.map(s => `<option value="${s.id}"${s.id===sel?' selected':''}>${esc(s.name)}</option>`).join('');
+    const opts2 = (sel) => `<option value="">— aucun —</option>` + data.stats.map(s => `<option value="${s.id}"${s.id===sel?' selected':''}>${esc(s.name)}</option>`).join('');
+    const hasDen2 = !!ratio.denomId2;
     d.innerHTML = `
       <div class="ratio-config-header">
         <input type="text" value="${esc(ratio.name)}" data-rid="${ratio.id}" placeholder="Nom de l'indicateur">
         <button class="btn-del" onclick="deleteRatio('${ratio.id}')">✕</button>
       </div>
+      <div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Formule : Numérateur ÷ Dénominateur</div>
       <div class="ratio-formula">
         <select data-rid="${ratio.id}" data-f="numId">${opts(ratio.numId)}</select>
         <span class="ratio-div-sym">÷</span>
-        <select data-rid="${ratio.id}" data-f="denomId">${opts(ratio.denomId)}</select>
+        <div style="display:flex;flex-direction:column;gap:4px;flex:1;">
+          <select data-rid="${ratio.id}" data-f="denomId">${opts(ratio.denomId)}</select>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:.7rem;color:var(--muted);font-weight:700;">+ ajouter :</span>
+            <select data-rid="${ratio.id}" data-f="denomId2" style="flex:1;">${opts2(ratio.denomId2||'')}</select>
+          </div>
+          <div style="font-size:.65rem;color:var(--muted);font-style:italic;">${hasDen2 ? `→ Dénominateur = ${esc(data.stats.find(s=>s.id===ratio.denomId)?.name||'?')} + ${esc(data.stats.find(s=>s.id===ratio.denomId2)?.name||'?')}` : '→ Dénominateur simple'}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:8px 10px;background:var(--surface3);border-radius:9px;border:1px solid var(--border);">
+        <input type="checkbox" id="inv-${ratio.id}" ${ratio.invertColors?'checked':''} style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
+        <label for="inv-${ratio.id}" style="font-size:.75rem;font-weight:600;color:var(--text);cursor:pointer;">Inverser les couleurs <span style="color:var(--muted);font-weight:400;">(utile pour un taux de perte : bas = bon)</span></label>
       </div>
       <div class="ratio-thresholds">
         <span>Seuils :</span>
         <div class="threshold-grp"><div class="threshold-dot" style="background:var(--red)"></div>
-          <input type="number" min="0" max="100" value="${ratio.t1}" data-rid="${ratio.id}" data-f="t1">
-          <span>%</span></div>
+          <input type="number" min="0" max="100" value="${ratio.t1}" data-rid="${ratio.id}" data-f="t1"><span>%</span></div>
         <div class="threshold-grp"><div class="threshold-dot" style="background:var(--orange)"></div>
-          <input type="number" min="0" max="100" value="${ratio.t2}" data-rid="${ratio.id}" data-f="t2">
-          <span>%</span></div>
+          <input type="number" min="0" max="100" value="${ratio.t2}" data-rid="${ratio.id}" data-f="t2"><span>%</span></div>
         <div class="threshold-grp"><div class="threshold-dot" style="background:var(--green)"></div>
-          <input type="number" min="0" max="100" value="${ratio.t3}" data-rid="${ratio.id}" data-f="t3">
-          <span>%</span></div>
+          <input type="number" min="0" max="100" value="${ratio.t3}" data-rid="${ratio.id}" data-f="t3"><span>%</span></div>
       </div>
       <div class="thresholds-legend">Rouge &lt; ${ratio.t1}% · Orange ${ratio.t1}–${ratio.t2}% · Vert ${ratio.t2}–${ratio.t3}% · Vert vif ≥ ${ratio.t3}%</div>`;
     rl.appendChild(d);
@@ -692,8 +736,19 @@ function renderSettings() {
       inp.oninput = function() { const r = data.ratios.find(x=>x.id===this.dataset.rid); if(r){r.name=this.value; save(); renderTeams();} };
     });
     d.querySelectorAll('select').forEach(sel => {
-      sel.onchange = function() { const r = data.ratios.find(x=>x.id===this.dataset.rid); if(r){r[this.dataset.f]=this.value; save(); renderTeams();} };
+      sel.onchange = function() {
+        const r = data.ratios.find(x=>x.id===this.dataset.rid);
+        if(r){
+          r[this.dataset.f] = this.value || null;
+          save(); renderTeams(); renderSettings();
+        }
+      };
     });
+    const cbInv = d.querySelector(`#inv-${ratio.id}`);
+    if (cbInv) cbInv.onchange = function() {
+      const r = data.ratios.find(x=>x.id===ratio.id);
+      if(r){ r.invertColors = this.checked; save(); renderTeams(); }
+    };
     d.querySelectorAll('input[type="number"]').forEach(inp => {
       inp.oninput = function() {
         const r = data.ratios.find(x=>x.id===this.dataset.rid);
@@ -705,14 +760,12 @@ function renderSettings() {
     });
   });
 
-  // Col toggle
   document.querySelectorAll('#col-toggle .view-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.cols === data.gridCols);
     btn.onclick = () => { data.gridCols = btn.dataset.cols; save(); renderTeams(); renderSettings(); };
   });
 }
 
-// ─── STAT MODAL ───
 let editingStatId = null;
 function openStatModal(statId) {
   editingStatId = statId;
@@ -751,7 +804,7 @@ function deleteStat(id) {
 }
 function addRatio() {
   if (data.stats.length < 2) { showToast('⚠ Au moins 2 critères nécessaires'); return; }
-  data.ratios.push({ id: 'ratio_'+Date.now(), name: 'Indicateur', numId: data.stats[0].id, denomId: data.stats[1].id, t1: 30, t2: 50, t3: 70 });
+  data.ratios.push({ id: 'ratio_'+Date.now(), name: 'Nouvel indicateur', numId: data.stats[0].id, denomId: data.stats[1].id, denomId2: null, invertColors: false, t1: 30, t2: 50, t3: 70 });
   save(); renderSettings(); renderTeams();
 }
 function deleteRatio(id) {
@@ -771,9 +824,6 @@ function confirmResetAll() {
   save(); renderTeams(); showToast('Tous les compteurs remis à zéro');
 }
 
-// ═══════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function showToast(msg) {
   const t = document.getElementById('toast'); t.textContent = msg;
@@ -784,9 +834,6 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id); }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o => closeModal(o.id)); });
 
-// ═══════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════
 renderTeams();
 document.getElementById('btn-view-toggle').textContent = '⊞ ' + COL_LABELS[data.gridCols];
 </script>
