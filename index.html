@@ -52,21 +52,59 @@
   /* ─── SESSION BAR ─── */
   .session-bar {
     background: var(--surface2); border-bottom: 1px solid var(--border);
-    padding: 8px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 10px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   }
   .session-name-input {
     background: transparent; border: none; border-bottom: 1.5px solid var(--border);
     color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.88rem;
-    padding: 3px 6px; width: 170px; outline: none; font-weight: 500;
+    padding: 3px 6px; width: 150px; outline: none; font-weight: 500;
   }
   .session-name-input:focus { border-color: var(--accent); }
-  .session-timer { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--accent); letter-spacing: 3px; }
+
+  /* ─── TIMER BLOCK (much bigger) ─── */
+  .timer-block {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface3); border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 8px 16px;
+    transition: border-color .2s;
+  }
+  .timer-block.running { border-color: var(--green); box-shadow: 0 0 16px rgba(0,230,118,.2); }
+  .timer-block.finished { border-color: var(--red); box-shadow: 0 0 20px rgba(255,74,94,.4); animation: timerPulse 0.7s ease infinite alternate; }
+  @keyframes timerPulse { from { box-shadow: 0 0 10px rgba(255,74,94,.3); } to { box-shadow: 0 0 28px rgba(255,74,94,.7); } }
+
+  .session-timer {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.2rem;
+    letter-spacing: 4px;
+    color: var(--accent);
+    line-height: 1;
+    cursor: pointer;
+    transition: color .2s;
+    user-select: none;
+    min-width: 120px;
+    text-align: center;
+  }
+  .session-timer:hover { color: #fff; }
+  .timer-block.running .session-timer { color: var(--green); }
+  .timer-block.finished .session-timer { color: var(--red); }
+  .timer-duration-hint {
+    font-size: 0.68rem; color: var(--muted); font-weight: 700;
+    text-align: center; letter-spacing: .5px; margin-top: 2px;
+  }
+  .timer-col { display: flex; flex-direction: column; align-items: center; }
+
   .timer-btn {
-    background: var(--surface3); border: 1.5px solid var(--border); color: var(--text);
-    border-radius: 8px; padding: 5px 12px; cursor: pointer; font-size: 0.85rem; font-weight: 700;
+    background: var(--surface); border: 1.5px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: 6px 14px; cursor: pointer; font-size: 1rem; font-weight: 700;
     font-family: 'Outfit', sans-serif; transition: all .12s;
   }
   .timer-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .timer-btn.go { background: rgba(0,230,118,.12); border-color: var(--green); color: var(--green); }
+  .timer-btn.go:hover { background: var(--green); color: #000; }
+  .timer-btn.pause { background: rgba(255,143,0,.12); border-color: var(--orange); color: var(--orange); }
+  .timer-btn.pause:hover { background: var(--orange); color: #000; }
+  .timer-btns { display: flex; gap: 6px; }
+
   #btn-undo-global {
     margin-left: auto; background: rgba(255,74,94,.1); border: 1.5px solid var(--red);
     color: var(--red); border-radius: 8px; padding: 6px 14px; font-size: 0.82rem;
@@ -104,13 +142,26 @@
     border: 1.5px solid var(--border);
     overflow: hidden;
     box-shadow: 0 4px 24px rgba(0,0,0,.35);
-    transition: box-shadow .2s;
+    transition: box-shadow .25s, opacity .25s, transform .25s;
   }
   .team-card:hover { box-shadow: 0 8px 40px rgba(0,0,0,.5); }
 
+  /* IN MATCH → glowing border */
+  .team-card.in-match {
+    border-width: 2.5px;
+    transform: scale(1.01);
+  }
+  /* RESTING → dimmed */
+  .team-card.resting {
+    opacity: 0.42;
+    filter: grayscale(40%);
+    transform: scale(0.98);
+  }
+  .team-card.resting:hover { opacity: 0.65; filter: grayscale(20%); }
+
   .team-header {
     padding: 14px 18px 12px;
-    display: flex; align-items: center; gap: 10px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   }
   .team-color-bar {
     width: 5px; height: 40px; border-radius: 3px; flex-shrink: 0;
@@ -122,6 +173,40 @@
     opacity: 0; transition: opacity .15s; font-family: 'Outfit', sans-serif; font-weight: 600;
   }
   .team-card:hover .team-edit-btn { opacity: 1; }
+
+  /* Match toggle button */
+  .btn-match-toggle {
+    border: none; border-radius: 20px; padding: 5px 13px; font-size: 0.75rem;
+    font-weight: 800; cursor: pointer; font-family: 'Outfit', sans-serif;
+    transition: all .18s; letter-spacing: .5px; white-space: nowrap;
+  }
+  .btn-match-toggle.off {
+    background: rgba(77,159,255,.12); color: var(--blue); border: 1.5px solid rgba(77,159,255,.35);
+  }
+  .btn-match-toggle.off:hover { background: rgba(77,159,255,.25); border-color: var(--blue); }
+  .btn-match-toggle.on {
+    background: var(--green); color: #000; border: 1.5px solid var(--green);
+    box-shadow: 0 0 14px rgba(0,230,118,.5);
+  }
+
+  /* Match counter badge */
+  .match-counter-badge {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--surface3); border: 1px solid var(--border);
+    border-radius: 20px; padding: 4px 12px; font-size: 0.72rem;
+    font-weight: 800; color: var(--muted); letter-spacing: .5px;
+  }
+  .match-counter-badge .mc-num { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--accent); }
+
+  /* In-match banner */
+  .in-match-banner {
+    display: none; align-items: center; justify-content: center; gap: 8px;
+    padding: 6px; font-size: 0.78rem; font-weight: 800; letter-spacing: 1.5px;
+    text-transform: uppercase; color: #000;
+    animation: bannerPulse 1.5s ease infinite alternate;
+  }
+  @keyframes bannerPulse { from { opacity: .85; } to { opacity: 1; } }
+  .team-card.in-match .in-match-banner { display: flex; }
 
   /* ─── STATS ─── */
   .stats-list { padding: 0 12px 10px; display: flex; flex-direction: column; gap: 8px; }
@@ -189,7 +274,6 @@
   .ratio-bar { height: 8px; border-radius: 5px; background: var(--surface3); overflow: hidden; }
   .ratio-bar-fill { height: 100%; border-radius: 5px; transition: width .4s cubic-bezier(.4,0,.2,1); }
 
-  /* mastery colors */
   .mastery-insuf   { background: rgba(255,74,94,.2);  color: var(--red);    }
   .mastery-fragile { background: rgba(255,143,0,.2);  color: var(--orange); }
   .mastery-ok      { background: rgba(0,230,118,.2);  color: var(--green);  }
@@ -211,13 +295,8 @@
   }
   .btn-reset:hover { border-color: var(--red); color: var(--red); background: rgba(255,74,94,.06); }
 
-  /* ─── DIVIDER ─── */
   .team-divider {
-    height: 2px;
-    margin: 0 12px;
-    border-radius: 2px;
-    opacity: .25;
-    margin-bottom: 10px;
+    height: 2px; margin: 0 12px; border-radius: 2px; opacity: .25; margin-bottom: 10px;
   }
 
   /* ─── MODALS ─── */
@@ -245,6 +324,27 @@
   .btn-cancel { flex: 1; min-width: 80px; background: var(--surface2); border: 1.5px solid var(--border); color: var(--text); border-radius: 12px; padding: 12px; font-size: 0.92rem; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 700; }
   .btn-save { flex: 2; min-width: 120px; background: var(--accent); border: none; color: #000; border-radius: 12px; padding: 12px; font-size: 0.95rem; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 800; box-shadow: 0 4px 16px rgba(245,166,35,.25); }
   .btn-danger { background: rgba(255,74,94,.12); border: 1.5px solid var(--red); color: var(--red); border-radius: 12px; padding: 12px 18px; font-size: 0.9rem; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 700; }
+
+  /* ─── TIMER CONFIG MODAL ─── */
+  .timer-modal { max-width: 340px; }
+  .timer-modal h2 { margin-bottom: 14px; }
+  .duration-inputs { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 20px 0; }
+  .dur-field { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .dur-field label { font-size: 0.68rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .dur-field input {
+    width: 80px; text-align: center; background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 11px; padding: 10px 8px; color: var(--text); font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem; letter-spacing: 3px; outline: none;
+  }
+  .dur-field input:focus { border-color: var(--accent); }
+  .dur-sep { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--muted); margin-top: 18px; }
+  .quick-durations { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 8px; }
+  .quick-dur-btn {
+    background: var(--surface3); border: 1.5px solid var(--border); color: var(--muted);
+    border-radius: 20px; padding: 5px 14px; font-size: 0.78rem; font-weight: 700;
+    cursor: pointer; font-family: 'Outfit', sans-serif; transition: all .15s;
+  }
+  .quick-dur-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   /* ─── SETTINGS VIEW ─── */
   #settings-view { padding: 22px; max-width: 720px; display: none; }
@@ -285,11 +385,12 @@
   @keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.28)} 100%{transform:scale(1)} }
   .pop { animation: pop .2s ease; }
 
-  @media (max-width: 480px) {
+  @media (max-width: 600px) {
     .stat-value { font-size: 2.5rem; }
     .ctrl-btn { width: 52px; }
     #btn-undo-global .undo-label { display: none; }
     .header-credit { display: none; }
+    .session-timer { font-size: 2.4rem; }
   }
 </style>
 </head>
@@ -308,9 +409,19 @@
 
 <div class="session-bar">
   <input class="session-name-input" id="session-name" placeholder="Nom de la séance…">
-  <span class="session-timer" id="timer">00:00</span>
-  <button class="timer-btn" id="btn-timer">▶</button>
-  <button class="timer-btn" id="btn-timer-reset">↺</button>
+
+  <!-- TIMER BLOCK -->
+  <div class="timer-block" id="timer-block">
+    <div class="timer-col">
+      <div class="session-timer" id="timer" title="Cliquer pour régler la durée">00:00</div>
+      <div class="timer-duration-hint" id="timer-hint">Cliquer pour régler</div>
+    </div>
+    <div class="timer-btns">
+      <button class="timer-btn go" id="btn-timer" title="Démarrer / Pause">▶</button>
+      <button class="timer-btn" id="btn-timer-reset" title="Remettre à zéro">↺</button>
+    </div>
+  </div>
+
   <button id="btn-undo-global" disabled>↩ <span class="undo-label">Annuler</span></button>
 </div>
 
@@ -397,10 +508,49 @@
   </div>
 </div>
 
+<!-- MODAL Durée du match -->
+<div class="overlay" id="modal-timer">
+  <div class="modal timer-modal">
+    <h2>⏱ Durée du match</h2>
+    <div class="quick-durations">
+      <button class="quick-dur-btn" onclick="setQuickDur(2)">2 min</button>
+      <button class="quick-dur-btn" onclick="setQuickDur(3)">3 min</button>
+      <button class="quick-dur-btn" onclick="setQuickDur(4)">4 min</button>
+      <button class="quick-dur-btn" onclick="setQuickDur(5)">5 min</button>
+      <button class="quick-dur-btn" onclick="setQuickDur(8)">8 min</button>
+      <button class="quick-dur-btn" onclick="setQuickDur(10)">10 min</button>
+    </div>
+    <div class="duration-inputs">
+      <div class="dur-field">
+        <label>Minutes</label>
+        <input type="number" id="dur-min" min="0" max="99" value="4">
+      </div>
+      <div class="dur-sep">:</div>
+      <div class="dur-field">
+        <label>Secondes</label>
+        <input type="number" id="dur-sec" min="0" max="59" value="0">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-timer')">Annuler</button>
+      <button class="btn-save" onclick="applyDuration()">✓ Valider</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-const COLORS = ['#ff4757','#ff6b81','#ffa502','#f5a623','#2ed573','#1dd1a1','#1e90ff','#74b9ff','#a29bfe','#fd79a8','#ffffff','#b2bec3'];
+// ── COULEURS (jaune et noir ajoutés) ──
+const COLORS = [
+  '#ff4757','#ff6b81','#ffa502','#f5a623',
+  '#2ed573','#1dd1a1','#1e90ff','#74b9ff',
+  '#a29bfe','#fd79a8',
+  '#ffd700',  // JAUNE
+  '#ffffff',
+  '#2d2d2d',  // NOIR
+  '#b2bec3'
+];
 
 const defaultData = () => ({
   teams: [],
@@ -417,39 +567,158 @@ const defaultData = () => ({
   }],
   gridCols: 'auto',
   session: '',
+  matchDuration: 240, // secondes (4 min)
 });
 
 let data = JSON.parse(localStorage.getItem('eps_data') || 'null') || defaultData();
+// S'assurer que matchDuration existe (migration)
+if (!data.matchDuration) data.matchDuration = 240;
+// S'assurer que chaque équipe a matchCount et inMatch
+data.teams.forEach(t => {
+  if (t.matchCount === undefined) t.matchCount = 0;
+  if (t.inMatch === undefined) t.inMatch = false;
+});
+
 let editingTeamId = null;
 let currentColor = COLORS[0];
 let undoStack = [];
 
 function save() { localStorage.setItem('eps_data', JSON.stringify(data)); }
 
-// TIMER
-let timerSecs = parseInt(localStorage.getItem('eps_timer') || '0');
+// ── TIMER (compte à rebours) ──
+let timerSecs = data.matchDuration;
 let timerOn = false, timerIv = null;
+let timerFinished = false;
+
 function renderTimer() {
+  const mins = Math.floor(timerSecs / 60);
+  const secs = timerSecs % 60;
   document.getElementById('timer').textContent =
-    String(Math.floor(timerSecs/60)).padStart(2,'0') + ':' + String(timerSecs%60).padStart(2,'0');
+    String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+  updateTimerHint();
+  updateTimerBlockClass();
 }
+
+function updateTimerHint() {
+  const mins = Math.floor(data.matchDuration / 60);
+  const secs = data.matchDuration % 60;
+  const label = secs > 0 ? `${mins}min ${secs}s` : `${mins} min`;
+  document.getElementById('timer-hint').textContent = `⏱ ${label} — cliquer pour régler`;
+}
+
+function updateTimerBlockClass() {
+  const block = document.getElementById('timer-block');
+  const btn = document.getElementById('btn-timer');
+  if (timerFinished) {
+    block.className = 'timer-block finished';
+    btn.className = 'timer-btn';
+    btn.textContent = '▶';
+  } else if (timerOn) {
+    block.className = 'timer-block running';
+    btn.className = 'timer-btn pause';
+    btn.textContent = '⏸';
+  } else {
+    block.className = 'timer-block';
+    btn.className = 'timer-btn go';
+    btn.textContent = '▶';
+  }
+}
+
+function onTimerEnd() {
+  clearInterval(timerIv);
+  timerOn = false;
+  timerFinished = true;
+  timerSecs = 0;
+  renderTimer();
+  showToast('⏰ Match terminé !');
+  // Incrémenter matchCount pour les équipes en match
+  let teamsIncremented = 0;
+  data.teams.forEach(t => {
+    if (t.inMatch) { t.matchCount = (t.matchCount || 0) + 1; teamsIncremented++; }
+  });
+  if (teamsIncremented > 0) {
+    save();
+    renderTeams();
+    showToast(`⏰ Match terminé ! +1 match pour les équipes en jeu`);
+  }
+}
+
 renderTimer();
+
 document.getElementById('btn-timer').onclick = function() {
+  if (timerFinished) {
+    // Reset and start fresh
+    timerFinished = false;
+    timerSecs = data.matchDuration;
+    renderTimer();
+  }
   timerOn = !timerOn;
-  this.textContent = timerOn ? '⏸' : '▶';
-  if (timerOn) timerIv = setInterval(() => { timerSecs++; localStorage.setItem('eps_timer', timerSecs); renderTimer(); }, 1000);
-  else clearInterval(timerIv);
+  if (timerOn) {
+    timerIv = setInterval(() => {
+      timerSecs--;
+      localStorage.setItem('eps_timer', timerSecs);
+      renderTimer();
+      if (timerSecs <= 0) onTimerEnd();
+    }, 1000);
+  } else {
+    clearInterval(timerIv);
+  }
+  updateTimerBlockClass();
 };
+
 document.getElementById('btn-timer-reset').onclick = function() {
-  clearInterval(timerIv); timerOn = false; timerSecs = 0;
-  localStorage.setItem('eps_timer', 0); renderTimer();
-  document.getElementById('btn-timer').textContent = '▶';
+  clearInterval(timerIv);
+  timerOn = false;
+  timerFinished = false;
+  timerSecs = data.matchDuration;
+  localStorage.setItem('eps_timer', timerSecs);
+  renderTimer();
 };
+
+// Clic sur le chrono → ouvre le modal de durée
+document.getElementById('timer').onclick = function() {
+  openTimerModal();
+};
+
+function openTimerModal() {
+  const mins = Math.floor(data.matchDuration / 60);
+  const secs = data.matchDuration % 60;
+  document.getElementById('dur-min').value = mins;
+  document.getElementById('dur-sec').value = secs;
+  document.getElementById('modal-timer').classList.add('open');
+  setTimeout(() => document.getElementById('dur-min').focus(), 80);
+}
+
+window.setQuickDur = function(minutes) {
+  document.getElementById('dur-min').value = minutes;
+  document.getElementById('dur-sec').value = 0;
+};
+
+window.applyDuration = function() {
+  const mins = Math.max(0, parseInt(document.getElementById('dur-min').value) || 0);
+  const secs = Math.max(0, Math.min(59, parseInt(document.getElementById('dur-sec').value) || 0));
+  const total = mins * 60 + secs;
+  if (total < 5) { showToast('⚠ Durée trop courte (min 5s)'); return; }
+  data.matchDuration = total;
+  save();
+  // Reset timer to new duration
+  clearInterval(timerIv);
+  timerOn = false;
+  timerFinished = false;
+  timerSecs = data.matchDuration;
+  renderTimer();
+  document.getElementById('btn-timer').className = 'timer-btn go';
+  document.getElementById('btn-timer').textContent = '▶';
+  closeModal('modal-timer');
+  showToast(`⏱ Durée réglée : ${mins}min${secs>0?' '+secs+'s':''}`);
+};
+
+// Session name
 const sesInput = document.getElementById('session-name');
 sesInput.value = data.session || '';
 sesInput.oninput = () => { data.session = sesInput.value; save(); };
 
-// UNDO
+// ── UNDO ──
 function pushUndo(teamId, statId, oldVal) {
   undoStack.push({ teamId, statId, oldVal });
   if (undoStack.length > 60) undoStack.shift();
@@ -465,7 +734,7 @@ document.getElementById('btn-undo-global').onclick = function() {
   showToast('↩ Dernière action annulée');
 };
 
-// VIEW / NAV
+// ── VIEW / NAV ──
 let showSettings = false;
 document.getElementById('btn-settings').onclick = function() {
   showSettings = !showSettings;
@@ -504,6 +773,19 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
+// ── MATCH SELECTION LOGIC ──
+function toggleMatchStatus(teamId) {
+  const team = data.teams.find(t => t.id === teamId);
+  if (!team) return;
+  team.inMatch = !team.inMatch;
+  save();
+  renderTeams();
+  const anyInMatch = data.teams.some(t => t.inMatch);
+  if (team.inMatch) showToast(`⚔ ${team.name} est en match`);
+  else showToast(`💤 ${team.name} au repos`);
+}
+
+// ── RENDER TEAMS ──
 function renderTeams() {
   const grid = document.getElementById('teams-grid');
   const empty = document.getElementById('empty-state');
@@ -512,12 +794,22 @@ function renderTeams() {
   if (!data.teams.length) { empty.style.display = 'flex'; return; }
   empty.style.display = 'none';
 
+  const anyInMatch = data.teams.some(t => t.inMatch);
+
   data.teams.forEach(team => {
     const vals = team.values || {};
+    const isInMatch = !!team.inMatch;
+    const isResting = anyInMatch && !isInMatch;
+    const mc = team.matchCount || 0;
+
     const card = document.createElement('div');
-    card.className = 'team-card';
-    card.style.borderColor = hexToRgba(team.color, 0.4);
-    card.style.boxShadow = `0 4px 28px rgba(0,0,0,.35), inset 0 0 0 1px ${hexToRgba(team.color, 0.08)}`;
+    card.className = 'team-card' + (isInMatch ? ' in-match' : '') + (isResting ? ' resting' : '');
+    card.style.borderColor = isInMatch ? team.color : hexToRgba(team.color, 0.4);
+    if (isInMatch) {
+      card.style.boxShadow = `0 0 0 3px ${team.color}, 0 8px 40px ${hexToRgba(team.color, 0.6)}, inset 0 0 0 1px ${hexToRgba(team.color, 0.15)}`;
+    } else {
+      card.style.boxShadow = `0 4px 28px rgba(0,0,0,.35), inset 0 0 0 1px ${hexToRgba(team.color, 0.08)}`;
+    }
 
     const statsHtml = data.stats.map(stat => {
       const v = vals[stat.id] ?? 0;
@@ -575,11 +867,26 @@ function renderTeams() {
       </div>`;
     }).join('') + `</div>` : '';
 
+    const matchBtnLabel = isInMatch ? '⚔ En match' : '💤 Repos';
+    const matchBtnClass = isInMatch ? 'on' : 'off';
+
     card.innerHTML = `
+      <!-- Bannière en match -->
+      <div class="in-match-banner" style="background:${team.color};color:${isLightColor(team.color)?'#000':'#000'};">
+        ⚔ EN MATCH
+      </div>
       <div class="team-header" style="background:${hexToRgba(team.color, 0.1)}; border-bottom: 1px solid ${hexToRgba(team.color, 0.2)};">
         <div class="team-color-bar" style="background:${team.color};box-shadow:0 0 10px ${hexToRgba(team.color, 0.6)}"></div>
         <div class="team-name" style="color:${team.color};text-shadow:0 2px 12px ${hexToRgba(team.color, 0.4)}">${esc(team.name)}</div>
-        <button class="team-edit-btn" onclick="openTeamModal('${team.id}')">✏ Modifier</button>
+        <!-- Match counter badge -->
+        <div class="match-counter-badge" title="Nombre de matchs joués">
+          🏅 <span class="mc-num">${mc}</span> match${mc > 1 ? 's' : ''}
+        </div>
+        <button class="team-edit-btn" onclick="openTeamModal('${team.id}')">✏</button>
+      </div>
+      <!-- Match toggle button -->
+      <div style="padding: 8px 14px 0; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-match-toggle ${matchBtnClass}" onclick="toggleMatchStatus('${team.id}')">${matchBtnLabel}</button>
       </div>
       <div class="stats-list">${statsHtml}</div>
       ${ratiosHtml}
@@ -595,6 +902,14 @@ function renderTeams() {
       changeStat(this.dataset.team, this.dataset.stat, parseInt(this.dataset.d));
     });
   });
+}
+
+function isLightColor(hex) {
+  const h = hex.replace('#','');
+  const r = parseInt(h.slice(0,2), 16);
+  const g = parseInt(h.slice(2,4), 16);
+  const b = parseInt(h.slice(4,6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 128;
 }
 
 function changeStat(teamId, statId, delta) {
@@ -619,6 +934,7 @@ function resetTeam(teamId) {
   if (team) { team.values = {}; save(); renderTeams(); showToast('Compteurs remis à zéro'); }
 }
 
+// ── TEAM MODAL ──
 function openTeamModal(teamId) {
   editingTeamId = teamId;
   const team = teamId ? data.teams.find(t => t.id === teamId) : null;
@@ -638,7 +954,17 @@ function buildColorPicker(selected) {
     const sw = document.createElement('div');
     sw.className = 'color-swatch' + (c === selected ? ' selected' : '');
     sw.style.background = c;
-    sw.onclick = () => { row.querySelectorAll('.color-swatch').forEach(x => x.classList.remove('selected')); sw.classList.add('selected'); currentColor = c; };
+    sw.style.border = (c === '#ffffff' || c === '#ffd700') ? '3px solid #555' : '3px solid transparent';
+    if (c === selected) sw.style.borderColor = '#fff';
+    sw.onclick = () => {
+      row.querySelectorAll('.color-swatch').forEach(x => {
+        x.style.borderColor = (x.style.background === 'rgb(255, 255, 255)' || x.style.background === 'rgb(255, 215, 0)') ? '#555' : 'transparent';
+        x.classList.remove('selected');
+      });
+      sw.classList.add('selected');
+      sw.style.borderColor = '#fff';
+      currentColor = c;
+    };
     row.appendChild(sw);
   });
   const wrap = document.createElement('div'); wrap.className = 'color-custom'; wrap.title = 'Couleur personnalisée';
@@ -656,7 +982,7 @@ function saveTeam() {
     const t = data.teams.find(x => x.id === editingTeamId);
     t.name = name; t.color = currentColor;
   } else {
-    data.teams.push({ id: 'team_'+Date.now(), name, color: currentColor, values: {} });
+    data.teams.push({ id: 'team_'+Date.now(), name, color: currentColor, values: {}, matchCount: 0, inMatch: false });
   }
   save(); closeModal('modal-team'); renderTeams();
   if (showSettings) renderSettings();
@@ -671,6 +997,7 @@ function deleteCurrentTeam() {
   showToast('Équipe supprimée');
 }
 
+// ── SETTINGS ──
 function renderSettings() {
   const tl = document.getElementById('st-teams'); tl.innerHTML = '';
   if (!data.teams.length) tl.innerHTML = '<p style="color:var(--muted);font-size:.82rem;">Aucune équipe.</p>';
@@ -678,6 +1005,7 @@ function renderSettings() {
     const d = document.createElement('div'); d.className = 'team-list-item';
     d.innerHTML = `<div class="team-list-dot" style="background:${team.color}"></div>
       <div class="team-list-name">${esc(team.name)}</div>
+      <span style="font-size:.72rem;color:var(--muted);font-weight:700;">🏅 ${team.matchCount||0}</span>
       <button class="btn-sm" onclick="openTeamModal('${team.id}')">✏ Modifier</button>
       <button class="btn-sm del" onclick="quickDelTeam('${team.id}')">✕</button>`;
     tl.appendChild(d);
@@ -738,10 +1066,7 @@ function renderSettings() {
     d.querySelectorAll('select').forEach(sel => {
       sel.onchange = function() {
         const r = data.ratios.find(x=>x.id===this.dataset.rid);
-        if(r){
-          r[this.dataset.f] = this.value || null;
-          save(); renderTeams(); renderSettings();
-        }
+        if(r){ r[this.dataset.f] = this.value || null; save(); renderTeams(); renderSettings(); }
       };
     });
     const cbInv = d.querySelector(`#inv-${ratio.id}`);
@@ -818,7 +1143,7 @@ function quickDelTeam(id) {
 }
 function confirmResetAll() {
   if (!confirm('Remettre TOUS les compteurs à zéro ?')) return;
-  data.teams.forEach(t => t.values = {});
+  data.teams.forEach(t => { t.values = {}; });
   undoStack = [];
   document.getElementById('btn-undo-global').disabled = true;
   save(); renderTeams(); showToast('Tous les compteurs remis à zéro');
@@ -828,13 +1153,26 @@ function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 function showToast(msg) {
   const t = document.getElementById('toast'); t.textContent = msg;
   t.classList.add('show'); clearTimeout(t._to);
-  t._to = setTimeout(() => t.classList.remove('show'), 2400);
+  t._to = setTimeout(() => t.classList.remove('show'), 2600);
 }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); editingTeamId = null; }
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  if (id === 'modal-team') editingTeamId = null;
+  if (id === 'modal-stat') editingStatId = null;
+}
 document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id); }));
-document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o => closeModal(o.id)); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o => closeModal(o.id));
+  if (e.key === 'Enter' && document.getElementById('modal-timer').classList.contains('open')) applyDuration();
+});
+
+// Expose globals
+window.openTeamModal = openTeamModal;
+window.openStatModal = openStatModal;
+window.toggleMatchStatus = toggleMatchStatus;
 
 renderTeams();
+updateTimerHint();
 document.getElementById('btn-view-toggle').textContent = '⊞ ' + COL_LABELS[data.gridCols];
 </script>
 </body>
