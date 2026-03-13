@@ -61,7 +61,7 @@
   }
   .session-name-input:focus { border-color: var(--accent); }
 
-  /* ─── TIMER BLOCK (much bigger) ─── */
+  /* ─── TIMER BLOCK ─── */
   .timer-block {
     display: flex; align-items: center; gap: 10px;
     background: var(--surface3); border: 1.5px solid var(--border);
@@ -105,6 +105,79 @@
   .timer-btn.pause:hover { background: var(--orange); color: #000; }
   .timer-btns { display: flex; gap: 6px; }
 
+  /* ─── SCORE BLOCK ─── */
+  .score-block {
+    display: flex; align-items: center;
+    background: var(--surface3); border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 8px 14px; gap: 10px;
+    transition: border-color .3s, box-shadow .3s;
+    flex-shrink: 0;
+  }
+  .score-block.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 18px rgba(245,166,35,.18);
+  }
+  .score-block-label {
+    font-size: 0.62rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--muted);
+    writing-mode: horizontal-tb;
+  }
+  .score-teams-wrap {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .score-team-side {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .score-team-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem; letter-spacing: 1.5px;
+    line-height: 1; min-width: 36px; text-align: center;
+    white-space: nowrap; max-width: 70px;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .score-ctrl-col {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+  }
+  .score-ctrl {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); border-radius: 6px; width: 26px; height: 20px;
+    font-size: 0.85rem; font-weight: 800; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1; transition: all .1s; font-family: 'Outfit', sans-serif;
+    padding: 0;
+  }
+  .score-ctrl.plus:hover { background: rgba(0,230,118,.18); color: var(--green); border-color: var(--green); }
+  .score-ctrl.minus:hover { background: rgba(255,74,94,.18); color: var(--red); border-color: var(--red); }
+  .score-ctrl:active { transform: scale(.88); }
+  .score-digit {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem; letter-spacing: 2px; line-height: 1;
+    min-width: 44px; text-align: center;
+    text-shadow: 0 2px 16px rgba(0,0,0,.6);
+    transition: color .2s;
+  }
+  .score-sep {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.6rem; color: var(--muted);
+    line-height: 1; letter-spacing: 0; user-select: none;
+    padding: 0 2px;
+  }
+  .score-placeholder {
+    font-size: 0.72rem; color: var(--muted); font-weight: 600;
+    font-style: italic; padding: 4px 2px;
+    white-space: nowrap;
+  }
+  .score-stat-hint {
+    font-size: 0.6rem; color: var(--muted); font-weight: 600;
+    text-align: center; letter-spacing: .4px; margin-top: 1px;
+    white-space: nowrap;
+  }
+
+  @keyframes scorePop {
+    0%{transform:scale(1)} 35%{transform:scale(1.35)} 100%{transform:scale(1)}
+  }
+  .score-pop { animation: scorePop .22s ease; }
+
   #btn-undo-global {
     margin-left: auto; background: rgba(255,74,94,.1); border: 1.5px solid var(--red);
     color: var(--red); border-radius: 8px; padding: 6px 14px; font-size: 0.82rem;
@@ -145,27 +218,15 @@
     transition: box-shadow .25s, opacity .25s, transform .25s;
   }
   .team-card:hover { box-shadow: 0 8px 40px rgba(0,0,0,.5); }
-
-  /* IN MATCH → glowing border */
-  .team-card.in-match {
-    border-width: 2.5px;
-    transform: scale(1.01);
-  }
-  /* RESTING → dimmed */
-  .team-card.resting {
-    opacity: 0.42;
-    filter: grayscale(40%);
-    transform: scale(0.98);
-  }
+  .team-card.in-match { border-width: 2.5px; transform: scale(1.01); }
+  .team-card.resting { opacity: 0.42; filter: grayscale(40%); transform: scale(0.98); }
   .team-card.resting:hover { opacity: 0.65; filter: grayscale(20%); }
 
   .team-header {
     padding: 14px 18px 12px;
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   }
-  .team-color-bar {
-    width: 5px; height: 40px; border-radius: 3px; flex-shrink: 0;
-  }
+  .team-color-bar { width: 5px; height: 40px; border-radius: 3px; flex-shrink: 0; }
   .team-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 2.5px; flex: 1; line-height: 1; }
   .team-edit-btn {
     background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
@@ -174,22 +235,15 @@
   }
   .team-card:hover .team-edit-btn { opacity: 1; }
 
-  /* Match toggle button */
   .btn-match-toggle {
     border: none; border-radius: 20px; padding: 5px 13px; font-size: 0.75rem;
     font-weight: 800; cursor: pointer; font-family: 'Outfit', sans-serif;
     transition: all .18s; letter-spacing: .5px; white-space: nowrap;
   }
-  .btn-match-toggle.off {
-    background: rgba(77,159,255,.12); color: var(--blue); border: 1.5px solid rgba(77,159,255,.35);
-  }
+  .btn-match-toggle.off { background: rgba(77,159,255,.12); color: var(--blue); border: 1.5px solid rgba(77,159,255,.35); }
   .btn-match-toggle.off:hover { background: rgba(77,159,255,.25); border-color: var(--blue); }
-  .btn-match-toggle.on {
-    background: var(--green); color: #000; border: 1.5px solid var(--green);
-    box-shadow: 0 0 14px rgba(0,230,118,.5);
-  }
+  .btn-match-toggle.on { background: var(--green); color: #000; border: 1.5px solid var(--green); box-shadow: 0 0 14px rgba(0,230,118,.5); }
 
-  /* Match counter badge */
   .match-counter-badge {
     display: flex; align-items: center; gap: 5px;
     background: var(--surface3); border: 1px solid var(--border);
@@ -198,7 +252,6 @@
   }
   .match-counter-badge .mc-num { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--accent); }
 
-  /* In-match banner */
   .in-match-banner {
     display: none; align-items: center; justify-content: center; gap: 8px;
     padding: 6px; font-size: 0.78rem; font-weight: 800; letter-spacing: 1.5px;
@@ -210,61 +263,26 @@
 
   /* ─── STATS ─── */
   .stats-list { padding: 0 12px 10px; display: flex; flex-direction: column; gap: 8px; }
-
-  .stat-row {
-    border-radius: 14px;
-    overflow: hidden;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-  }
-  .stat-label-bar {
-    padding: 6px 14px 4px;
-    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 1.2px; color: var(--muted);
-    border-bottom: 1px solid var(--border);
-  }
-  .stat-controls-row {
-    display: flex; align-items: stretch;
-  }
+  .stat-row { border-radius: 14px; overflow: hidden; background: var(--surface2); border: 1px solid var(--border); }
+  .stat-label-bar { padding: 6px 14px 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); border-bottom: 1px solid var(--border); }
+  .stat-controls-row { display: flex; align-items: stretch; }
   .ctrl-btn {
     width: 60px; border: none; flex-shrink: 0;
     font-size: 1.8rem; font-weight: 700; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: all .1s; user-select: none; font-family: 'Outfit', sans-serif;
-    line-height: 1;
+    transition: all .1s; user-select: none; font-family: 'Outfit', sans-serif; line-height: 1;
   }
   .ctrl-btn:active { filter: brightness(1.4); transform: scale(.9); }
-  .ctrl-btn.minus {
-    background: rgba(255,74,94,.15); color: var(--red);
-    border-right: 1px solid var(--border);
-  }
+  .ctrl-btn.minus { background: rgba(255,74,94,.15); color: var(--red); border-right: 1px solid var(--border); }
   .ctrl-btn.minus:hover { background: var(--red); color: #fff; }
-  .ctrl-btn.plus {
-    background: rgba(0,230,118,.12); color: var(--green);
-    border-left: 1px solid var(--border);
-  }
+  .ctrl-btn.plus { background: rgba(0,230,118,.12); color: var(--green); border-left: 1px solid var(--border); }
   .ctrl-btn.plus:hover { background: var(--green); color: #000; }
-
-  .stat-value-wrap {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    padding: 10px 0;
-    background: var(--surface3);
-  }
-  .stat-value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 3rem;
-    line-height: 1;
-    color: #fff;
-    text-shadow: 0 2px 12px rgba(0,0,0,.5);
-    letter-spacing: 2px;
-  }
+  .stat-value-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px 0; background: var(--surface3); }
+  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; line-height: 1; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.5); letter-spacing: 2px; }
 
   /* ─── RATIO BLOCK ─── */
   .ratios-zone { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 8px; }
-  .ratio-row {
-    background: var(--surface2); border-radius: 14px; padding: 11px 14px;
-    border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px;
-  }
+  .ratio-row { background: var(--surface2); border-radius: 14px; padding: 11px 14px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
   .ratio-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .ratio-label { font-size: 0.7rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; }
   .ratio-right { display: flex; align-items: center; gap: 8px; }
@@ -288,16 +306,9 @@
   .bar-top     { background: linear-gradient(90deg, var(--green), #69ffb0); }
 
   .team-footer { padding: 4px 12px 12px; display: flex; justify-content: flex-end; }
-  .btn-reset {
-    background: none; border: 1px solid var(--border); color: var(--muted);
-    border-radius: 8px; padding: 5px 13px; font-size: 0.72rem; cursor: pointer;
-    font-family: 'Outfit', sans-serif; font-weight: 600; transition: all .15s;
-  }
+  .btn-reset { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 5px 13px; font-size: 0.72rem; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 600; transition: all .15s; }
   .btn-reset:hover { border-color: var(--red); color: var(--red); background: rgba(255,74,94,.06); }
-
-  .team-divider {
-    height: 2px; margin: 0 12px; border-radius: 2px; opacity: .25; margin-bottom: 10px;
-  }
+  .team-divider { height: 2px; margin: 0 12px; border-radius: 2px; opacity: .25; margin-bottom: 10px; }
 
   /* ─── MODALS ─── */
   .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 200; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(6px); }
@@ -306,12 +317,7 @@
   .modal h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2.5px; color: var(--accent); margin-bottom: 22px; }
   .form-group { margin-bottom: 18px; }
   .form-group label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 8px; }
-  .form-group input[type="text"], .form-group input[type="number"], .form-group select {
-    width: 100%; background: var(--surface2); border: 1.5px solid var(--border);
-    border-radius: 11px; padding: 11px 14px; color: var(--text);
-    font-family: 'Outfit', sans-serif; font-size: 0.95rem; outline: none; transition: border-color .15s;
-    font-weight: 500;
-  }
+  .form-group input[type="text"], .form-group input[type="number"], .form-group select { width: 100%; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 11px; padding: 11px 14px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.95rem; outline: none; transition: border-color .15s; font-weight: 500; }
   .form-group select option { background: var(--surface2); }
   .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
   .color-picker-row { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -331,19 +337,11 @@
   .duration-inputs { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 20px 0; }
   .dur-field { display: flex; flex-direction: column; align-items: center; gap: 6px; }
   .dur-field label { font-size: 0.68rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-  .dur-field input {
-    width: 80px; text-align: center; background: var(--surface2); border: 1.5px solid var(--border);
-    border-radius: 11px; padding: 10px 8px; color: var(--text); font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.2rem; letter-spacing: 3px; outline: none;
-  }
+  .dur-field input { width: 80px; text-align: center; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 11px; padding: 10px 8px; color: var(--text); font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 3px; outline: none; }
   .dur-field input:focus { border-color: var(--accent); }
   .dur-sep { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--muted); margin-top: 18px; }
   .quick-durations { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 8px; }
-  .quick-dur-btn {
-    background: var(--surface3); border: 1.5px solid var(--border); color: var(--muted);
-    border-radius: 20px; padding: 5px 14px; font-size: 0.78rem; font-weight: 700;
-    cursor: pointer; font-family: 'Outfit', sans-serif; transition: all .15s;
-  }
+  .quick-dur-btn { background: var(--surface3); border: 1.5px solid var(--border); color: var(--muted); border-radius: 20px; padding: 5px 14px; font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all .15s; }
   .quick-dur-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   /* ─── SETTINGS VIEW ─── */
@@ -391,6 +389,8 @@
     #btn-undo-global .undo-label { display: none; }
     .header-credit { display: none; }
     .session-timer { font-size: 2.4rem; }
+    .score-digit { font-size: 2.2rem; }
+    .score-team-name { font-size: 0.9rem; max-width: 50px; }
   }
 </style>
 </head>
@@ -420,6 +420,11 @@
       <button class="timer-btn go" id="btn-timer" title="Démarrer / Pause">▶</button>
       <button class="timer-btn" id="btn-timer-reset" title="Remettre à zéro">↺</button>
     </div>
+  </div>
+
+  <!-- SCORE BLOCK -->
+  <div class="score-block" id="score-block">
+    <div class="score-placeholder">Sélectionner 2 équipes en match</div>
   </div>
 
   <button id="btn-undo-global" disabled>↩ <span class="undo-label">Annuler</span></button>
@@ -454,6 +459,14 @@
     <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px;">Définissez des ratios affichés avec code couleur de maîtrise.</p>
     <div id="st-ratios"></div>
     <button class="btn-add" onclick="addRatio()">+ Ajouter un indicateur</button>
+  </div>
+
+  <div class="settings-section">
+    <h3>Critère utilisé pour le score en direct</h3>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px;">Le bloc score affiché à côté du chronomètre lit ce critère.</p>
+    <div class="form-group" style="margin:0;">
+      <select id="score-stat-select" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:11px;padding:10px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.9rem;outline:none;width:auto;min-width:220px;"></select>
+    </div>
   </div>
 
   <div class="settings-section">
@@ -541,15 +554,12 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── COULEURS (jaune et noir ajoutés) ──
+// ── COULEURS ──
 const COLORS = [
   '#ff4757','#ff6b81','#ffa502','#f5a623',
   '#2ed573','#1dd1a1','#1e90ff','#74b9ff',
   '#a29bfe','#fd79a8',
-  '#ffd700',  // JAUNE
-  '#ffffff',
-  '#2d2d2d',  // NOIR
-  '#b2bec3'
+  '#ffd700','#ffffff','#2d2d2d','#b2bec3'
 ];
 
 const defaultData = () => ({
@@ -567,13 +577,17 @@ const defaultData = () => ({
   }],
   gridCols: 'auto',
   session: '',
-  matchDuration: 240, // secondes (4 min)
+  matchDuration: 240,
+  scoreStatId: 's3', // critère utilisé pour le score en direct
 });
 
 let data = JSON.parse(localStorage.getItem('eps_data') || 'null') || defaultData();
-// S'assurer que matchDuration existe (migration)
 if (!data.matchDuration) data.matchDuration = 240;
-// S'assurer que chaque équipe a matchCount et inMatch
+if (!data.scoreStatId) {
+  // Auto-détecter le critère "point"
+  const pointStat = data.stats.find(s => s.name.toLowerCase().includes('point'));
+  data.scoreStatId = pointStat ? pointStat.id : (data.stats[0]?.id || null);
+}
 data.teams.forEach(t => {
   if (t.matchCount === undefined) t.matchCount = 0;
   if (t.inMatch === undefined) t.inMatch = false;
@@ -585,7 +599,77 @@ let undoStack = [];
 
 function save() { localStorage.setItem('eps_data', JSON.stringify(data)); }
 
-// ── TIMER (compte à rebours) ──
+// ── SCORE BLOCK ──
+function getScoreStat() {
+  return data.stats.find(s => s.id === data.scoreStatId) || data.stats[0] || null;
+}
+
+function renderScoreBlock() {
+  const block = document.getElementById('score-block');
+  const inMatchTeams = data.teams.filter(t => t.inMatch);
+
+  if (inMatchTeams.length !== 2) {
+    block.className = 'score-block';
+    block.innerHTML = `<div class="score-placeholder">${inMatchTeams.length === 0 ? 'Sélectionner 2 équipes en match' : inMatchTeams.length === 1 ? '1 équipe en match — sélectionner la 2ᵉ' : '— Score —'}</div>`;
+    return;
+  }
+
+  const [t1, t2] = inMatchTeams;
+  const scoreStat = getScoreStat();
+  const s1 = scoreStat ? ((t1.values || {})[scoreStat.id] ?? 0) : 0;
+  const s2 = scoreStat ? ((t2.values || {})[scoreStat.id] ?? 0) : 0;
+
+  block.className = 'score-block active';
+
+  block.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+      <div class="score-block-label">Score</div>
+      <div class="score-stat-hint" style="color:var(--accent);font-size:0.58rem;">${esc(scoreStat?.name || '—')}</div>
+    </div>
+    <div class="score-teams-wrap">
+      <!-- Équipe 1 -->
+      <div class="score-team-side">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <div class="score-team-name" style="color:${t1.color};text-shadow:0 0 12px ${hexToRgba(t1.color,.5)}">${esc(t1.name)}</div>
+          <div class="score-stat-hint">${esc(scoreStat?.name||'')}</div>
+        </div>
+        <div class="score-ctrl-col">
+          <button class="score-ctrl plus" data-team="${t1.id}" data-d="1" title="+1">+</button>
+          <button class="score-ctrl minus" data-team="${t1.id}" data-d="-1" title="-1">−</button>
+        </div>
+        <div class="score-digit" id="sd-${t1.id}" style="color:${t1.color};text-shadow:0 0 20px ${hexToRgba(t1.color,.5)}">${s1}</div>
+      </div>
+      <!-- Séparateur -->
+      <div class="score-sep">–</div>
+      <!-- Équipe 2 -->
+      <div class="score-team-side" style="flex-direction:row-reverse;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <div class="score-team-name" style="color:${t2.color};text-shadow:0 0 12px ${hexToRgba(t2.color,.5)}">${esc(t2.name)}</div>
+          <div class="score-stat-hint">${esc(scoreStat?.name||'')}</div>
+        </div>
+        <div class="score-ctrl-col">
+          <button class="score-ctrl plus" data-team="${t2.id}" data-d="1" title="+1">+</button>
+          <button class="score-ctrl minus" data-team="${t2.id}" data-d="-1" title="-1">−</button>
+        </div>
+        <div class="score-digit" id="sd-${t2.id}" style="color:${t2.color};text-shadow:0 0 20px ${hexToRgba(t2.color,.5)}">${s2}</div>
+      </div>
+    </div>`;
+
+  // Boutons +/- du score block
+  block.querySelectorAll('.score-ctrl').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const scoreStat = getScoreStat();
+      if (!scoreStat) return;
+      changeStat(this.dataset.team, scoreStat.id, parseInt(this.dataset.d));
+      // Animation sur le chiffre
+      const digitEl = document.getElementById(`sd-${this.dataset.team}`);
+      if (digitEl) { digitEl.classList.remove('score-pop'); void digitEl.offsetWidth; digitEl.classList.add('score-pop'); }
+    });
+  });
+}
+
+// ── TIMER ──
 let timerSecs = data.matchDuration;
 let timerOn = false, timerIv = null;
 let timerFinished = false;
@@ -630,24 +714,18 @@ function onTimerEnd() {
   timerFinished = true;
   timerSecs = 0;
   renderTimer();
-  showToast('⏰ Match terminé !');
-  // Incrémenter matchCount pour les équipes en match
   let teamsIncremented = 0;
   data.teams.forEach(t => {
     if (t.inMatch) { t.matchCount = (t.matchCount || 0) + 1; teamsIncremented++; }
   });
-  if (teamsIncremented > 0) {
-    save();
-    renderTeams();
-    showToast(`⏰ Match terminé ! +1 match pour les équipes en jeu`);
-  }
+  if (teamsIncremented > 0) { save(); renderTeams(); }
+  showToast('⏰ Match terminé !');
 }
 
 renderTimer();
 
 document.getElementById('btn-timer').onclick = function() {
   if (timerFinished) {
-    // Reset and start fresh
     timerFinished = false;
     timerSecs = data.matchDuration;
     renderTimer();
@@ -675,10 +753,7 @@ document.getElementById('btn-timer-reset').onclick = function() {
   renderTimer();
 };
 
-// Clic sur le chrono → ouvre le modal de durée
-document.getElementById('timer').onclick = function() {
-  openTimerModal();
-};
+document.getElementById('timer').onclick = function() { openTimerModal(); };
 
 function openTimerModal() {
   const mins = Math.floor(data.matchDuration / 60);
@@ -701,7 +776,6 @@ window.applyDuration = function() {
   if (total < 5) { showToast('⚠ Durée trop courte (min 5s)'); return; }
   data.matchDuration = total;
   save();
-  // Reset timer to new duration
   clearInterval(timerIv);
   timerOn = false;
   timerFinished = false;
@@ -759,10 +833,10 @@ function applyGrid() {
 
 function getMastery(pct, ratio) {
   const inv = ratio.invertColors;
-  if (pct >= +ratio.t3) return inv ? { k:'insuf',   txt:'Insuffisante'     } : { k:'top',    txt:'Très satisfaisante' };
-  if (pct >= +ratio.t2) return inv ? { k:'fragile', txt:'Fragile'          } : { k:'ok',     txt:'Satisfaisante'      };
-  if (pct >= +ratio.t1) return inv ? { k:'ok',      txt:'Satisfaisante'    } : { k:'fragile', txt:'Fragile'           };
-  return                       inv ? { k:'top',     txt:'Très satisfaisante'} : { k:'insuf',   txt:'Insuffisante'      };
+  if (pct >= +ratio.t3) return inv ? { k:'insuf',   txt:'Insuffisante'      } : { k:'top',     txt:'Très satisfaisante' };
+  if (pct >= +ratio.t2) return inv ? { k:'fragile', txt:'Fragile'           } : { k:'ok',      txt:'Satisfaisante'      };
+  if (pct >= +ratio.t1) return inv ? { k:'ok',      txt:'Satisfaisante'    } : { k:'fragile',  txt:'Fragile'            };
+  return                       inv ? { k:'top',     txt:'Très satisfaisante'} : { k:'insuf',    txt:'Insuffisante'       };
 }
 
 function hexToRgba(hex, alpha) {
@@ -780,7 +854,6 @@ function toggleMatchStatus(teamId) {
   team.inMatch = !team.inMatch;
   save();
   renderTeams();
-  const anyInMatch = data.teams.some(t => t.inMatch);
   if (team.inMatch) showToast(`⚔ ${team.name} est en match`);
   else showToast(`💤 ${team.name} au repos`);
 }
@@ -791,7 +864,7 @@ function renderTeams() {
   const empty = document.getElementById('empty-state');
   grid.innerHTML = '';
   applyGrid();
-  if (!data.teams.length) { empty.style.display = 'flex'; return; }
+  if (!data.teams.length) { empty.style.display = 'flex'; renderScoreBlock(); return; }
   empty.style.display = 'none';
 
   const anyInMatch = data.teams.some(t => t.inMatch);
@@ -871,20 +944,15 @@ function renderTeams() {
     const matchBtnClass = isInMatch ? 'on' : 'off';
 
     card.innerHTML = `
-      <!-- Bannière en match -->
-      <div class="in-match-banner" style="background:${team.color};color:${isLightColor(team.color)?'#000':'#000'};">
-        ⚔ EN MATCH
-      </div>
+      <div class="in-match-banner" style="background:${team.color};color:#000;">⚔ EN MATCH</div>
       <div class="team-header" style="background:${hexToRgba(team.color, 0.1)}; border-bottom: 1px solid ${hexToRgba(team.color, 0.2)};">
         <div class="team-color-bar" style="background:${team.color};box-shadow:0 0 10px ${hexToRgba(team.color, 0.6)}"></div>
         <div class="team-name" style="color:${team.color};text-shadow:0 2px 12px ${hexToRgba(team.color, 0.4)}">${esc(team.name)}</div>
-        <!-- Match counter badge -->
         <div class="match-counter-badge" title="Nombre de matchs joués">
           🏅 <span class="mc-num">${mc}</span> match${mc > 1 ? 's' : ''}
         </div>
         <button class="team-edit-btn" onclick="openTeamModal('${team.id}')">✏</button>
       </div>
-      <!-- Match toggle button -->
       <div style="padding: 8px 14px 0; display:flex; gap:8px; flex-wrap:wrap;">
         <button class="btn-match-toggle ${matchBtnClass}" onclick="toggleMatchStatus('${team.id}')">${matchBtnLabel}</button>
       </div>
@@ -902,6 +970,9 @@ function renderTeams() {
       changeStat(this.dataset.team, this.dataset.stat, parseInt(this.dataset.d));
     });
   });
+
+  // Mettre à jour le bloc score après le rendu
+  renderScoreBlock();
 }
 
 function isLightColor(hex) {
@@ -922,10 +993,22 @@ function changeStat(teamId, statId, delta) {
   pushUndo(teamId, statId, old);
   team.values[statId] = nv;
   save();
+  // Mettre à jour la valeur dans la carte
   const el = document.getElementById(`v-${teamId}-${statId}`);
   if (el) { el.textContent = nv; el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+  // Mettre à jour le score block si ce stat est le stat de score
+  const scoreStat = getScoreStat();
+  if (scoreStat && statId === scoreStat.id) {
+    const sdEl = document.getElementById(`sd-${teamId}`);
+    if (sdEl) {
+      sdEl.textContent = nv;
+      sdEl.classList.remove('score-pop'); void sdEl.offsetWidth; sdEl.classList.add('score-pop');
+    }
+  }
+  // Re-render si ratio affecté ou si score stat affecté
   const affectsRatio = data.ratios.some(r => r.numId === statId || r.denomId === statId || r.denomId2 === statId);
   if (affectsRatio) renderTeams();
+  else renderScoreBlock();
 }
 
 function resetTeam(teamId) {
@@ -1085,6 +1168,17 @@ function renderSettings() {
     });
   });
 
+  // Score stat selector
+  const scoreSelect = document.getElementById('score-stat-select');
+  if (scoreSelect) {
+    scoreSelect.innerHTML = data.stats.map(s => `<option value="${s.id}"${s.id === data.scoreStatId ? ' selected' : ''}>${esc(s.name)}</option>`).join('');
+    scoreSelect.onchange = function() {
+      data.scoreStatId = this.value;
+      save();
+      renderScoreBlock();
+    };
+  }
+
   document.querySelectorAll('#col-toggle .view-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.cols === data.gridCols);
     btn.onclick = () => { data.gridCols = btn.dataset.cols; save(); renderTeams(); renderSettings(); };
@@ -1118,6 +1212,7 @@ function deleteStatFromModal() {
   if (data.stats.length <= 1) { showToast('⚠ Au moins 1 critère requis'); return; }
   data.stats = data.stats.filter(s => s.id !== editingStatId);
   data.ratios = data.ratios.filter(r => r.numId !== editingStatId && r.denomId !== editingStatId);
+  if (data.scoreStatId === editingStatId) data.scoreStatId = data.stats[0]?.id || null;
   save(); closeModal('modal-stat'); renderSettings(); renderTeams();
   showToast('Critère supprimé');
 }
@@ -1125,6 +1220,7 @@ function deleteStat(id) {
   if (data.stats.length <= 1) { showToast('⚠ Au moins 1 critère requis'); return; }
   data.stats = data.stats.filter(s => s.id !== id);
   data.ratios = data.ratios.filter(r => r.numId !== id && r.denomId !== id);
+  if (data.scoreStatId === id) data.scoreStatId = data.stats[0]?.id || null;
   save(); renderSettings(); renderTeams();
 }
 function addRatio() {
@@ -1166,7 +1262,6 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && document.getElementById('modal-timer').classList.contains('open')) applyDuration();
 });
 
-// Expose globals
 window.openTeamModal = openTeamModal;
 window.openStatModal = openStatModal;
 window.toggleMatchStatus = toggleMatchStatus;
