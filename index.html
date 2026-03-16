@@ -278,6 +278,33 @@
   .ctrl-btn.plus { background: rgba(0,230,118,.12); color: var(--green); border-left: 1px solid var(--border); }
   .ctrl-btn.plus:hover { background: var(--green); color: #000; }
   .stat-value-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px 0; background: var(--surface3); }
+
+  /* ─── MULTI-STEP BUTTONS ─── */
+  .step-btns { display: flex; flex-direction: column; border-left: 1px solid var(--border); flex-shrink: 0; }
+  .step-btn {
+    flex: 1; min-height: 34px; width: 62px; border: none;
+    background: rgba(0,230,118,.1); color: var(--green);
+    font-size: 0.78rem; font-weight: 800; cursor: pointer; line-height: 1;
+    padding: 0 6px; display: flex; align-items: center; justify-content: center;
+    transition: all .1s; font-family: 'Outfit', sans-serif; letter-spacing: .3px;
+    border-bottom: 1px solid rgba(58,66,96,.5);
+    user-select: none;
+  }
+  .step-btn:last-child { border-bottom: none; }
+  .step-btn:hover { background: var(--green); color: #000; }
+  .step-btn:active { filter: brightness(1.3); transform: scale(.88); }
+
+  /* ─── STEP CHIPS (modal) ─── */
+  .step-chip-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 10px; }
+  .step-chip {
+    background: var(--surface3); border: 1.5px solid var(--border);
+    color: var(--muted); border-radius: 9px; padding: 6px 14px;
+    font-size: 0.82rem; font-weight: 800; cursor: pointer;
+    font-family: 'Outfit', sans-serif; transition: all .15s; user-select: none;
+  }
+  .step-chip.active { background: rgba(0,230,118,.15); border-color: var(--green); color: var(--green); }
+  .step-chip:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+  .steps-preview-tag { background: rgba(0,230,118,.12); color: var(--green); border: 1px solid rgba(0,230,118,.3); border-radius: 6px; padding: 2px 8px; font-size: 0.7rem; font-weight: 800; font-family: 'Outfit', sans-serif; }
   .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; line-height: 1; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.5); letter-spacing: 2px; }
 
   /* ─── RATIO BLOCK ─── */
@@ -511,7 +538,19 @@
     <h2 id="modal-stat-title">Nouveau critère</h2>
     <div class="form-group">
       <label>Nom du critère</label>
-      <input type="text" id="stat-name-input" placeholder="ex: Balles perdues, Passes réussies…" maxlength="40">
+      <input type="text" id="stat-name-input" placeholder="ex: Rebond défensif, Interception…" maxlength="40">
+    </div>
+    <div class="form-group">
+      <label>Valeurs d'incrément <span style="color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0;font-size:.68rem;">— cliquer pour activer/désactiver</span></label>
+      <div class="step-chip-row" id="step-chips"></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="number" id="custom-step-input" min="1" max="9999" placeholder="Valeur personnalisée…" style="flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.9rem;outline:none;">
+        <button type="button" onclick="addCustomStep()" style="background:var(--surface3);border:1.5px solid var(--border);color:var(--text);border-radius:9px;padding:9px 14px;font-size:.82rem;font-weight:800;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;">+ Ajouter</button>
+      </div>
+      <div style="margin-top:10px;padding:9px 12px;background:var(--surface3);border-radius:10px;border:1px solid var(--border);">
+        <div style="font-size:.65rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Aperçu des boutons sur la carte :</div>
+        <div id="steps-preview" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-danger" id="btn-del-stat" style="display:none;" onclick="deleteStatFromModal()">Supprimer</button>
@@ -565,9 +604,9 @@ const COLORS = [
 const defaultData = () => ({
   teams: [],
   stats: [
-    { id: 's1', name: 'Frisbee perdu' },
-    { id: 's2', name: 'Passes réussies' },
-    { id: 's3', name: 'Point marqué' },
+    { id: 's1', name: 'Frisbee perdu', steps: [1] },
+    { id: 's2', name: 'Passes réussies', steps: [1] },
+    { id: 's3', name: 'Point marqué', steps: [1] },
   ],
   ratios: [{
     id: 'r1', name: 'Taux de perte de possession',
@@ -592,10 +631,14 @@ data.teams.forEach(t => {
   if (t.matchCount === undefined) t.matchCount = 0;
   if (t.inMatch === undefined) t.inMatch = false;
 });
+// Migration : ajouter steps aux critères existants
+data.stats.forEach(s => { if (!s.steps || !s.steps.length) s.steps = [1]; });
 
 let editingTeamId = null;
 let currentColor = COLORS[0];
+let currentSteps = [1];
 let undoStack = [];
+const PRESET_STEPS = [1, 2, 5, 10, 50, 100];
 
 function save() { localStorage.setItem('eps_data', JSON.stringify(data)); }
 
@@ -886,14 +929,19 @@ function renderTeams() {
 
     const statsHtml = data.stats.map(stat => {
       const v = vals[stat.id] ?? 0;
+      const steps = stat.steps && stat.steps.length ? stat.steps : [1];
+      const minusStep = steps[0];
+      const stepBtnsHtml = steps.map(step =>
+        `<button class="step-btn" data-team="${team.id}" data-stat="${stat.id}" data-d="${step}">+${step >= 1000 ? (step/1000)+'k' : step}</button>`
+      ).join('');
       return `<div class="stat-row">
         <div class="stat-label-bar">${esc(stat.name)}</div>
         <div class="stat-controls-row">
-          <button class="ctrl-btn minus" data-team="${team.id}" data-stat="${stat.id}" data-d="-1">−</button>
+          <button class="ctrl-btn minus" data-team="${team.id}" data-stat="${stat.id}" data-d="-${minusStep}">−${minusStep > 1 ? minusStep : ''}</button>
           <div class="stat-value-wrap" style="background:${hexToRgba(team.color, 0.18)}">
             <div class="stat-value" id="v-${team.id}-${stat.id}" style="color:${team.color === '#ffffff' ? '#fff' : team.color};text-shadow:0 2px 16px ${hexToRgba(team.color, 0.6)}">${v}</div>
           </div>
-          <button class="ctrl-btn plus" data-team="${team.id}" data-stat="${stat.id}" data-d="1">+</button>
+          <div class="step-btns">${stepBtnsHtml}</div>
         </div>
       </div>`;
     }).join('');
@@ -964,7 +1012,7 @@ function renderTeams() {
     grid.appendChild(card);
   });
 
-  document.querySelectorAll('.ctrl-btn').forEach(btn => {
+  document.querySelectorAll('.ctrl-btn, .step-btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.stopPropagation();
       changeStat(this.dataset.team, this.dataset.stat, parseInt(this.dataset.d));
@@ -1097,8 +1145,10 @@ function renderSettings() {
   const sl = document.getElementById('st-stats'); sl.innerHTML = '';
   data.stats.forEach((stat, i) => {
     const d = document.createElement('div'); d.className = 'team-list-item';
+    const stepsHtml = (stat.steps || [1]).map(v => `<span class="steps-preview-tag">+${v}</span>`).join('');
     d.innerHTML = `<span style="color:var(--muted);font-size:.75rem;min-width:18px;font-weight:800;">${i+1}.</span>
       <div class="team-list-name">${esc(stat.name)}</div>
+      <div style="display:flex;gap:3px;flex-wrap:wrap;">${stepsHtml}</div>
       <button class="btn-sm" onclick="openStatModal('${stat.id}')">✏ Modifier</button>
       <button class="btn-sm del" onclick="deleteStat('${stat.id}')">✕</button>`;
     sl.appendChild(d);
@@ -1192,17 +1242,73 @@ function openStatModal(statId) {
   document.getElementById('modal-stat-title').textContent = stat ? 'Modifier le critère' : 'Nouveau critère';
   document.getElementById('stat-name-input').value = stat ? stat.name : '';
   document.getElementById('btn-del-stat').style.display = stat ? 'block' : 'none';
+  currentSteps = stat ? [...(stat.steps || [1])] : [1];
+  document.getElementById('custom-step-input').value = '';
+  buildStepChips();
   document.getElementById('modal-stat').classList.add('open');
   setTimeout(() => { const inp = document.getElementById('stat-name-input'); inp.focus(); inp.select(); }, 80);
 }
+
+function buildStepChips() {
+  const row = document.getElementById('step-chips');
+  row.innerHTML = '';
+  PRESET_STEPS.forEach(v => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'step-chip' + (currentSteps.includes(v) ? ' active' : '');
+    chip.textContent = '+' + v + ' pt' + (v > 1 ? 's' : '');
+    chip.onclick = () => {
+      if (currentSteps.includes(v)) {
+        if (currentSteps.length <= 1) { showToast('⚠ Au moins 1 valeur requise'); return; }
+        currentSteps = currentSteps.filter(x => x !== v);
+      } else {
+        currentSteps.push(v);
+        currentSteps.sort((a,b) => a-b);
+      }
+      buildStepChips();
+    };
+    row.appendChild(chip);
+  });
+  // Valeurs custom hors presets
+  currentSteps.filter(v => !PRESET_STEPS.includes(v)).forEach(v => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'step-chip active';
+    chip.textContent = '+' + v + ' pts ✕';
+    chip.onclick = () => {
+      if (currentSteps.length <= 1) { showToast('⚠ Au moins 1 valeur requise'); return; }
+      currentSteps = currentSteps.filter(x => x !== v);
+      buildStepChips();
+    };
+    row.appendChild(chip);
+  });
+  // Aperçu
+  const preview = document.getElementById('steps-preview');
+  if (preview) {
+    preview.innerHTML = currentSteps.map(v =>
+      `<span class="steps-preview-tag">+${v}</span>`
+    ).join('') + `<span style="margin-left:6px;font-size:.68rem;color:var(--muted);">← boutons + sur la carte</span>`;
+  }
+}
+
+window.addCustomStep = function() {
+  const inp = document.getElementById('custom-step-input');
+  const val = parseInt(inp.value);
+  if (!val || val < 1 || val > 9999) { showToast('⚠ Valeur entre 1 et 9999'); return; }
+  if (currentSteps.includes(val)) { showToast('Valeur déjà présente'); return; }
+  currentSteps.push(val);
+  currentSteps.sort((a,b) => a-b);
+  inp.value = '';
+  buildStepChips();
+};
 function saveStat() {
   const name = document.getElementById('stat-name-input').value.trim();
   if (!name) { showToast('⚠ Entrez un nom'); return; }
   if (editingStatId) {
     const s = data.stats.find(x => x.id === editingStatId);
-    if (s) s.name = name;
+    if (s) { s.name = name; s.steps = currentSteps; }
   } else {
-    data.stats.push({ id: 'stat_'+Date.now(), name });
+    data.stats.push({ id: 'stat_'+Date.now(), name, steps: currentSteps });
   }
   save(); closeModal('modal-stat'); renderSettings(); renderTeams();
   showToast(editingStatId ? 'Critère mis à jour ✓' : 'Critère ajouté ✓');
