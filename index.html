@@ -419,6 +419,36 @@
     .score-digit { font-size: 2.2rem; }
     .score-team-name { font-size: 0.9rem; max-width: 50px; }
   }
+  /* ─── SCORE CHECKBOXES ─── */
+  .score-check-item {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 11px; padding: 10px 14px; cursor: pointer;
+    transition: border-color .15s, background .15s;
+    user-select: none;
+  }
+  .score-check-item:hover { border-color: var(--accent); }
+  .score-check-item.checked {
+    background: rgba(245,166,35,.1); border-color: var(--accent);
+  }
+  .score-check-box {
+    width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0;
+    border: 2px solid var(--border); background: var(--surface3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; transition: all .15s;
+  }
+  .score-check-item.checked .score-check-box {
+    background: var(--accent); border-color: var(--accent); color: #000;
+  }
+  .score-check-label { font-weight: 600; font-size: 0.9rem; flex: 1; }
+  .score-check-all {
+    background: var(--surface3); border: 1.5px dashed var(--border);
+    color: var(--muted); border-radius: 9px; padding: 7px 16px;
+    font-size: 0.78rem; font-weight: 700; cursor: pointer;
+    font-family: 'Outfit', sans-serif; transition: all .15s; margin-bottom: 4px;
+    display: inline-block;
+  }
+  .score-check-all:hover { border-color: var(--accent); color: var(--accent); }
 </style>
 </head>
 <body>
@@ -489,11 +519,9 @@
   </div>
 
   <div class="settings-section">
-    <h3>Critère utilisé pour le score en direct</h3>
-    <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px;">Le bloc score affiché à côté du chronomètre lit ce critère.</p>
-    <div class="form-group" style="margin:0;">
-      <select id="score-stat-select" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:11px;padding:10px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.9rem;outline:none;width:auto;min-width:220px;"></select>
-    </div>
+    <h3>Critères utilisés pour le score en direct</h3>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px;">Le bloc score additionne tous les critères cochés.</p>
+    <div id="score-stat-checks" style="display:flex;flex-direction:column;gap:8px;"></div>
   </div>
 
   <div class="settings-section">
@@ -617,16 +645,23 @@ const defaultData = () => ({
   gridCols: 'auto',
   session: '',
   matchDuration: 240,
-  scoreStatId: 's3', // critère utilisé pour le score en direct
+  scoreStatIds: ['s3'], // critères sommés pour le score en direct (tableau)
 });
 
 let data = JSON.parse(localStorage.getItem('eps_data') || 'null') || defaultData();
 if (!data.matchDuration) data.matchDuration = 240;
-if (!data.scoreStatId) {
-  // Auto-détecter le critère "point"
-  const pointStat = data.stats.find(s => s.name.toLowerCase().includes('point'));
-  data.scoreStatId = pointStat ? pointStat.id : (data.stats[0]?.id || null);
+// Migration scoreStatId (ancien) → scoreStatIds (tableau)
+if (!data.scoreStatIds) {
+  if (data.scoreStatId) {
+    data.scoreStatIds = [data.scoreStatId];
+    delete data.scoreStatId;
+  } else {
+    const pointStat = data.stats.find(s => s.name.toLowerCase().includes('point'));
+    data.scoreStatIds = pointStat ? [pointStat.id] : (data.stats[0] ? [data.stats[0].id] : []);
+  }
 }
+// Nettoyer les ids invalides
+data.scoreStatIds = (data.scoreStatIds || []).filter(id => data.stats.some(s => s.id === id));
 data.teams.forEach(t => {
   if (t.matchCount === undefined) t.matchCount = 0;
   if (t.inMatch === undefined) t.inMatch = false;
@@ -642,9 +677,18 @@ const PRESET_STEPS = [1, 2, 5, 10, 50, 100];
 
 function save() { localStorage.setItem('eps_data', JSON.stringify(data)); }
 
-// ── SCORE BLOCK ──
-function getScoreStat() {
-  return data.stats.find(s => s.id === data.scoreStatId) || data.stats[0] || null;
+// ── SCORE BLOCK (multi-critères) ──
+function getScoreValue(team) {
+  const vals = team.values || {};
+  return (data.scoreStatIds || []).reduce((sum, id) => sum + (vals[id] ?? 0), 0);
+}
+
+function getScoreHint() {
+  if (!data.scoreStatIds || !data.scoreStatIds.length) return '—';
+  return data.scoreStatIds.map(id => {
+    const s = data.stats.find(x => x.id === id);
+    return s ? s.name : '?';
+  }).join(' + ');
 }
 
 function renderScoreBlock() {
@@ -658,23 +702,22 @@ function renderScoreBlock() {
   }
 
   const [t1, t2] = inMatchTeams;
-  const scoreStat = getScoreStat();
-  const s1 = scoreStat ? ((t1.values || {})[scoreStat.id] ?? 0) : 0;
-  const s2 = scoreStat ? ((t2.values || {})[scoreStat.id] ?? 0) : 0;
+  const s1 = getScoreValue(t1);
+  const s2 = getScoreValue(t2);
+  const hint = getScoreHint();
 
   block.className = 'score-block active';
 
   block.innerHTML = `
     <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
       <div class="score-block-label">Score</div>
-      <div class="score-stat-hint" style="color:var(--accent);font-size:0.58rem;">${esc(scoreStat?.name || '—')}</div>
+      <div class="score-stat-hint" style="color:var(--accent);font-size:0.58rem;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(hint)}">${esc(hint)}</div>
     </div>
     <div class="score-teams-wrap">
       <!-- Équipe 1 -->
       <div class="score-team-side">
         <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
           <div class="score-team-name" style="color:${t1.color};text-shadow:0 0 12px ${hexToRgba(t1.color,.5)}">${esc(t1.name)}</div>
-          <div class="score-stat-hint">${esc(scoreStat?.name||'')}</div>
         </div>
         <div class="score-ctrl-col">
           <button class="score-ctrl plus" data-team="${t1.id}" data-d="1" title="+1">+</button>
@@ -688,7 +731,6 @@ function renderScoreBlock() {
       <div class="score-team-side" style="flex-direction:row-reverse;">
         <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
           <div class="score-team-name" style="color:${t2.color};text-shadow:0 0 12px ${hexToRgba(t2.color,.5)}">${esc(t2.name)}</div>
-          <div class="score-stat-hint">${esc(scoreStat?.name||'')}</div>
         </div>
         <div class="score-ctrl-col">
           <button class="score-ctrl plus" data-team="${t2.id}" data-d="1" title="+1">+</button>
@@ -698,16 +740,22 @@ function renderScoreBlock() {
       </div>
     </div>`;
 
-  // Boutons +/- du score block
+  // Boutons +/- : agissent sur le premier critère coché (ou le dernier si un seul)
   block.querySelectorAll('.score-ctrl').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.stopPropagation();
-      const scoreStat = getScoreStat();
-      if (!scoreStat) return;
-      changeStat(this.dataset.team, scoreStat.id, parseInt(this.dataset.d));
-      // Animation sur le chiffre
-      const digitEl = document.getElementById(`sd-${this.dataset.team}`);
-      if (digitEl) { digitEl.classList.remove('score-pop'); void digitEl.offsetWidth; digitEl.classList.add('score-pop'); }
+      const targetId = data.scoreStatIds && data.scoreStatIds.length ? data.scoreStatIds[0] : null;
+      if (!targetId) return;
+      changeStat(this.dataset.team, targetId, parseInt(this.dataset.d));
+      // Recalcul de la somme et animation
+      const team = data.teams.find(t => t.id === this.dataset.team);
+      if (team) {
+        const digitEl = document.getElementById(`sd-${this.dataset.team}`);
+        if (digitEl) {
+          digitEl.textContent = getScoreValue(team);
+          digitEl.classList.remove('score-pop'); void digitEl.offsetWidth; digitEl.classList.add('score-pop');
+        }
+      }
     });
   });
 }
@@ -1044,19 +1092,17 @@ function changeStat(teamId, statId, delta) {
   // Mettre à jour la valeur dans la carte
   const el = document.getElementById(`v-${teamId}-${statId}`);
   if (el) { el.textContent = nv; el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
-  // Mettre à jour le score block si ce stat est le stat de score
-  const scoreStat = getScoreStat();
-  if (scoreStat && statId === scoreStat.id) {
+  // Mettre à jour le score block si ce stat fait partie des stats de score
+  if ((data.scoreStatIds || []).includes(statId)) {
     const sdEl = document.getElementById(`sd-${teamId}`);
     if (sdEl) {
-      sdEl.textContent = nv;
+      sdEl.textContent = getScoreValue(team);
       sdEl.classList.remove('score-pop'); void sdEl.offsetWidth; sdEl.classList.add('score-pop');
     }
   }
-  // Re-render si ratio affecté ou si score stat affecté
+  // Re-render si ratio affecté
   const affectsRatio = data.ratios.some(r => r.numId === statId || r.denomId === statId || r.denomId2 === statId);
   if (affectsRatio) renderTeams();
-  else renderScoreBlock();
 }
 
 function resetTeam(teamId) {
@@ -1218,15 +1264,38 @@ function renderSettings() {
     });
   });
 
-  // Score stat selector
-  const scoreSelect = document.getElementById('score-stat-select');
-  if (scoreSelect) {
-    scoreSelect.innerHTML = data.stats.map(s => `<option value="${s.id}"${s.id === data.scoreStatId ? ' selected' : ''}>${esc(s.name)}</option>`).join('');
-    scoreSelect.onchange = function() {
-      data.scoreStatId = this.value;
-      save();
-      renderScoreBlock();
+  // Score stat checkboxes
+  const checksContainer = document.getElementById('score-stat-checks');
+  if (checksContainer) {
+    const allChecked = data.stats.every(s => (data.scoreStatIds || []).includes(s.id));
+    checksContainer.innerHTML = '';
+    // Bouton "Tout cocher / tout décocher"
+    const allBtn = document.createElement('button');
+    allBtn.className = 'score-check-all';
+    allBtn.textContent = allChecked ? '☐ Tout décocher' : '☑ Tout cocher';
+    allBtn.onclick = () => {
+      data.scoreStatIds = allChecked ? [] : data.stats.map(s => s.id);
+      save(); renderScoreBlock(); renderSettings();
     };
+    checksContainer.appendChild(allBtn);
+    // Une case par critère
+    data.stats.forEach(stat => {
+      const isChecked = (data.scoreStatIds || []).includes(stat.id);
+      const item = document.createElement('div');
+      item.className = 'score-check-item' + (isChecked ? ' checked' : '');
+      item.innerHTML = `
+        <div class="score-check-box">${isChecked ? '✓' : ''}</div>
+        <div class="score-check-label">${esc(stat.name)}</div>`;
+      item.onclick = () => {
+        if ((data.scoreStatIds || []).includes(stat.id)) {
+          data.scoreStatIds = (data.scoreStatIds || []).filter(id => id !== stat.id);
+        } else {
+          data.scoreStatIds = [...(data.scoreStatIds || []), stat.id];
+        }
+        save(); renderScoreBlock(); renderSettings();
+      };
+      checksContainer.appendChild(item);
+    });
   }
 
   document.querySelectorAll('#col-toggle .view-btn').forEach(btn => {
@@ -1318,7 +1387,7 @@ function deleteStatFromModal() {
   if (data.stats.length <= 1) { showToast('⚠ Au moins 1 critère requis'); return; }
   data.stats = data.stats.filter(s => s.id !== editingStatId);
   data.ratios = data.ratios.filter(r => r.numId !== editingStatId && r.denomId !== editingStatId);
-  if (data.scoreStatId === editingStatId) data.scoreStatId = data.stats[0]?.id || null;
+  data.scoreStatIds = (data.scoreStatIds || []).filter(id => id !== editingStatId);
   save(); closeModal('modal-stat'); renderSettings(); renderTeams();
   showToast('Critère supprimé');
 }
@@ -1326,7 +1395,7 @@ function deleteStat(id) {
   if (data.stats.length <= 1) { showToast('⚠ Au moins 1 critère requis'); return; }
   data.stats = data.stats.filter(s => s.id !== id);
   data.ratios = data.ratios.filter(r => r.numId !== id && r.denomId !== id);
-  if (data.scoreStatId === id) data.scoreStatId = data.stats[0]?.id || null;
+  data.scoreStatIds = (data.scoreStatIds || []).filter(sid => sid !== id);
   save(); renderSettings(); renderTeams();
 }
 function addRatio() {
